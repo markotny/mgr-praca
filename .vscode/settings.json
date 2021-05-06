@@ -1,3 +1,17 @@
 {
-    "cSpell.language": "en,pl"
+    "cSpell.language": "en,pl",
+    "latex-workshop.view.pdf.invert": 0.85,
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+            "tools": [
+                "pdflatex",
+                "bibtex",
+                "pdflatex",
+                "pdflatex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": ""
 }
