@@ -1,9 +1,9 @@
 {
 	"name": "LaTeX",
-	"image":"markotny/mgr-tex",
-	// "build": {
-	// 	"dockerfile": "Dockerfile"
-	// },
+	// "image":"markotny/mgr-tex",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
 	"extensions": [
 		"james-yu.latex-workshop",
 		"streetsidesoftware.code-spell-checker-polish"
