@@ -1,70 +1,68 @@
 % !TeX root = ./Dyplom.tex
 
-\chapter{Dane}
-
-\section{Korpus}\label{sec:korpus}
+\chapter{Korpus}
   W pracy skorzystano z Korpusu Dyskursu Parlamentarnego\cite{PPC}, zwanym dalej PPC.
   Korpus zawiera dane sejmowe wygenerowane z zapisów stenograficznych z lat 1991-2019
     oraz ze zdigitalizowanych transkrypcji z lat 1918-1990.
   Zawarte są również dane z senatu oraz posiedzeń komisji i interpelacji,
     jednak w tej pracy skupiono się na danych z posiedzeń plenarnych sejmu III RP.
   Są to posiedzenia od początku Sejmu I Kadencji (25 listopada 1991), wybranego w pierwszych po wojnie w pełni wolnych wyborach.
+
+\section{Format danych}
+  Korpus dostępny jest w formacie bazującym na XML TEI P5, opracowanym na potrzeby NKJP \textit{(Narodowy Korpus Języka Polskiego)}.
+  Każde posiedzenie udokumentowane jest szeregiem plików reprezentujących inne aspekty analizy tekstu.
+  Dostępne są m.in. znaczniki morfosyntaktyczne, lematy, czy grupy syntaktyczne.
+  Pełna struktura opisana została w \cite[Ogrodniczuk, 2012]{PSC},
+    natomiast na potrzeby tej pracy przetworzone zostały jedynie następujące pliki:
+  \begin{itemize}
+    \item \verb|header.xml| --- metadane posiedzenia (data, lista mówców),
+    \item \verb|text_structure.xml| --- kolejne wypowiedzi z oznaczonym mówcą.
+  \end{itemize}
+  Adnotacje lingwistyczne nie zostały uwzględnione,
+    gdyż ze względu na specyfikę poruszanego problemu wymagane są surowe, nieoznakowane teksty.
   
-  \subsection{Format danych}
-    Korpus dostępny jest w formacie bazującym na XML TEI P5, opracowanym na potrzeby NKJP \textit{(Narodowy Korpus Języka Polskiego)}.
-    Każde posiedzenie udokumentowane jest szeregiem plików reprezentujących inne aspekty analizy tekstu.
-    Dostępne są m.in. znaczniki morfosyntaktyczne, lematy, czy grupy syntaktyczne.
-    Pełna struktura opisana została w \cite[Ogrodniczuk, 2012]{PSC},
-      natomiast na potrzeby tej pracy przetworzone zostały jedynie następujące pliki:
-    \begin{itemize}
-      \item \verb|header.xml| --- metadane posiedzenia (data, lista mówców),
-      \item \verb|text_structure.xml| --- kolejne wypowiedzi z oznaczonym mówcą.
-    \end{itemize}
-    Adnotacje lingwistyczne nie zostały uwzględnione,
-      gdyż ze względu na specyfikę poruszanego problemu wymagane są surowe, nieoznakowane teksty.
-    
-  \subsection{Przetwarzanie danych}
-    W celu ograniczenia liczby wypowiedzi, które nie są istotne z punktu widzenia analizy,
-      wykonano szereg czynności mających na celu odfiltrowanie nierzeczowych fragmentów.
-    
-    Zdarza się, że w trakcie wypowiedzi występują wtrącenia innych osób.
-    Takie komentarze są jednak odpowiednio oznakowane (,,\#komentarz'', czy ,,\#głosZSali'').
-    Dodatkowo, wszelkie komentarze do wypowiedzi występują jako osobny wpis, którego treść zawarta jest w nawiasach.
-    Takie fragmenty są usuwane, aby nie zaburzyć treści wypowiedzi danej osoby.
+\section{Przetwarzanie danych}
+  W celu ograniczenia liczby wypowiedzi, które nie są istotne z punktu widzenia analizy,
+    wykonano szereg czynności mających na celu odfiltrowanie nierzeczowych fragmentów.
+  
+  Zdarza się, że w trakcie wypowiedzi występują wtrącenia innych osób.
+  Takie komentarze są jednak odpowiednio oznakowane (,,\#komentarz'', czy ,,\#głosZSali'').
+  Dodatkowo, wszelkie komentarze do wypowiedzi występują jako osobny wpis, którego treść zawarta jest w nawiasach.
+  Takie fragmenty są usuwane, aby nie zaburzyć treści wypowiedzi danej osoby.
 
-    Ponadto przyjęto, że wypowiedzi marszałków oraz wicemarszałków ograniczają się do zarządzania procedowaniem sejmu,
-      więc nie wprowadzają żadnej wartości.
-    Na końcu usunięto wypowiedzi, których liczba znaków nie przekracza dwustu.
-    Próg ten wyznaczony został empirycznie tak, aby odrzucić wypowiedzi nie zawierające żadnej konkretnej informacji.
+  Ponadto przyjęto, że wypowiedzi marszałków oraz wicemarszałków ograniczają się do zarządzania procedowaniem sejmu,
+    więc nie wprowadzają żadnej wartości.
+  Na końcu usunięto wypowiedzi, których liczba znaków nie przekracza dwustu.
+  Próg ten wyznaczony został empirycznie tak, aby odrzucić wypowiedzi nie zawierające żadnej konkretnej informacji.
 
-  \subsection{Uzupełnienie danych o posłach}
-    Korpus uzupełniono o dane na temat osób wypowiadających się.
-    W tym celu skorzystano z internetowego Archiwum Danych o Posłach\cite{archiwum_posl}.
-    Na stronie dostępne są dane z różnym poziomem szczegółowości o posłach wszystkich kadencji od roku 1952.
-    Z archiwum pobrano następujące informacje dla wszystkich posłów III RP: klub parlamentarny, lista wyborcza, partia oraz okręg wyborczy.
+\section{Uzupełnienie danych o posłach}
+  Korpus uzupełniono o dane na temat osób wypowiadających się.
+  W tym celu skorzystano z internetowego Archiwum Danych o Posłach\cite{archiwum_posl}.
+  Na stronie dostępne są dane z różnym poziomem szczegółowości o posłach wszystkich kadencji od roku 1952.
+  Z archiwum pobrano następujące informacje dla wszystkich posłów III RP: klub parlamentarny, lista wyborcza, partia oraz okręg wyborczy.
 
-    Dane o posłach powiązano ze wpisami w korpusie na podstawie imienia i nazwiska mówcy.
-    W ten sposób udało się dopasować zdecydowaną większość wypowiadających się --- ponad 91\%.
-    W pozostałych przypadkach wypowiadają się zwykle osoby nie z rządu, np.\ prezydent.
+  Dane o posłach powiązano ze wpisami w korpusie na podstawie imienia i nazwiska mówcy.
+  W ten sposób udało się dopasować zdecydowaną większość wypowiadających się --- ponad 91\%.
+  W pozostałych przypadkach wypowiadają się zwykle osoby nie z rządu, np.\ prezydent.
 
-    Dokonano ręcznej weryfikacji spójności danych o okręgach wyborczych i uwspólniono okręgi z większych miast.
-    Następnie do każdego okręgu dopasowano województwo.
+  Dokonano ręcznej weryfikacji spójności danych o okręgach wyborczych i uwspólniono okręgi z większych miast.
+  Następnie do każdego okręgu dopasowano województwo.
 
-  \subsection{Końcowy format korpusu}
-    Po przetworzeniu korpusu otrzymano 291415 wypowiedzi na przestrzeni 28 lat.
-    Dla każdej z nich dostępne są następujące informacje:
-    \begin{itemize}
-      \item id --- identyfikator wypowiedzi, który składa się z identyfikatora posiedzenia (z PPC) połączonego z tagiem wypowiedzi (np. \verb|div-123|),
-      \item mówca --- imię i nazwisko tak, jak występuje bezpośrednio w PPC,
-      \item data --- data posiedzenia, z którego pochodzi dana wypowiedź,
-      \item text --- treść wypowiedzi,
-      \item poseł* --- imię i nazwisko posła wzięte z archiwum,
-      \item klub* --- klub parlamentarny, do którego należy poseł,
-      \item lista* --- lista wyborcza, z której startował poseł,
-      \item partia** --- partia, do której należy poseł,
-      \item okręg* --- okręg wyborczy posła,
-      \item kadencja --- kadencja, z której pochodzi dana wypowiedź
-    \end{itemize}
-    \vspace{1em}
-    * dostępne dla ok.\ 91\% wypowiedzi\\
-    ** dostępne dla ok.\ 18\% wypowiedzi
+\section{Końcowy format korpusu}
+  Po przetworzeniu korpusu otrzymano 291415 wypowiedzi na przestrzeni 28 lat.
+  Dla każdej z nich dostępne są następujące informacje:
+  \begin{itemize}
+    \item id --- identyfikator wypowiedzi, który składa się z identyfikatora posiedzenia (z PPC) połączonego z tagiem wypowiedzi (np. \verb|div-123|),
+    \item mówca --- imię i nazwisko tak, jak występuje bezpośrednio w PPC,
+    \item data --- data posiedzenia, z którego pochodzi dana wypowiedź,
+    \item text --- treść wypowiedzi,
+    \item poseł* --- imię i nazwisko posła wzięte z archiwum,
+    \item klub* --- klub parlamentarny, do którego należy poseł,
+    \item lista* --- lista wyborcza, z której startował poseł,
+    \item partia** --- partia, do której należy poseł,
+    \item okręg* --- okręg wyborczy posła,
+    \item kadencja --- kadencja, z której pochodzi dana wypowiedź
+  \end{itemize}
+  \vspace{1em}
+  * dostępne dla ok.\ 91\% wypowiedzi\\
+  ** dostępne dla ok.\ 18\% wypowiedzi
