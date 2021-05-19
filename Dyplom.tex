@@ -3,7 +3,7 @@
 %  Zawartość: Główny plik szablonu pracy dyplomowej (magisterskiej/inżynierskiej). 
 %  Opracował: Tomasz Kubik <tomasz.kubik@pwr.edu.pl>
 %  Data: 9 lutego 2021
-%  Wersja: 0.5
+%  Wersja: 0.6
 %  Wymagania: dedykowany do kompilatora pdflatex.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -341,7 +341,11 @@ Listing \thelstlisting: #1\hfill%\hfill%
 \addcontentsline{lol}{lstlisting}{\protect\numberline{\thelstlisting}#1}
 }%
 
-\renewcommand*{\lstlistlistingname}{Spis listingów} 
+% Redefinitions of labels for tables, figures and bibliography 
+%\AtBeginDocument{% 
+        \addto\captionspolish{% 
+        \renewcommand{\lstlistlistingname}{Spis listingów}%
+}%} 
 \newlistof{lstlistoflistings}{lol}{\lstlistlistingname}
 
 
@@ -629,12 +633,10 @@ Listing \thelstlisting: #1\hfill%\hfill%
 \renewcommand{\abstractnamefont}{\normalfont\Large\bfseries}
 \renewcommand{\abstracttextfont}{\normalfont}
 
-\newcommand\mykeywords[1]{\hspace{\absleftindent}
-       \iflanguage{polish}{
-			\textbf{Słowa kluczowe:} #1}{%
-			  \iflanguage{english}{{\textbf{Keywords:} #1}}{}}
+\newcommand\mykeywords[1]{\hspace{\absleftindent}\parbox{\linewidth-2.0\absleftindent}{
+       \iflanguage{polish}{\textbf{Słowa kluczowe:} #1}{%
+			  \iflanguage{english}{\textbf{Keywords:} #1}}{}}
 				}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                  
 %% Definicje stopek i nagłówków
