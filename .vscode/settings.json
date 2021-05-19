@@ -162,10 +162,11 @@
           "**/*.xwm": true
         },
         "cSpell.words": [
-          "NKJP",
-          "lniono",
-          "morfosyntaktyczne",
-          "uwsp",
-          "uwspólniono"
-        ]
+					"NKJP",
+					"lniono",
+					"morfosyntaktyczne",
+					"nieustrukturyzowanych",
+					"uwsp",
+					"uwspólniono"
+				]
 }
