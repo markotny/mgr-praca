@@ -56,20 +56,46 @@
 	\end{figure}
 
 	Ze względu na specyfikę potrzebnego korpusu do trenowania modeli SBERT (oznaczone pary zdań) nie istnieją obecnie modele wytrenowane w języku polskim.
-	Jednak w roku 2020 ci sami autorzy opracowali metodę przenoszenia wiedzy (ang.\ \emph{transfer learning}) z nauczonego modelu angielskiego na modele wielojęzykowe\cite{sbert_multilingual}.
+	Jednak w roku 2020 ci sami autorzy opracowali metodę przenoszenia wiedzy (ang.\ \emph{knowledge distillation}) z nauczonego modelu angielskiego na modele wielojęzykowe\cite{sbert_multilingual}.
+	Opiera się na koncepcji, według której te same zdania w różnych językach powinny być reprezentowane przez podobne wektory w tej samej przestrzeni.
+	Przekazanie wiedzy polega na minimalizacji różnicy wyników między modelem nauczającym, a modelem uczącym się (ang.\ \emph{teacher-student}) --- Rys.~\ref{fig:sbert_multilingual}.
+	W tym przykładzie modelem-nauczycielem jest SBERT wytrenowany na angielskim korpusie, natomiast uczniem jest model XLM-R (XLM-RoBERTa).
+	Jest to wielojęzykowy model bazujący na architekturze RoBERTa (wariacja BERT stworzona przez Facebook), wytrenowany na 2.5TB danych z CommonCrawl w 100 językach, w tym polskim\cite{xml_r}.
+	Model ten zajmuje obecnie ósme miejsce w rankingu KLEJ\footnote{\url{https://klejbenchmark.com/leaderboard} (dostęp dnia 20 maja 2021)}
+		oraz drugie miejsce po dostrojeniu (ang.\ \emph{fine-tuning}) na dodatkowych polskich korpusach.
+	\begin{figure}[ht]\label{fig:sbert_multilingual}
+		\centering
+		\includegraphics[width=.75\linewidth]{rys03/sbert_multilingual.png}
+		\caption{Układ modeli nauczyciel-uczeń w procesie uczenia wielojęzykowego SBERT\cite{sbert_multilingual}}
+	\end{figure}
 	
-
+	Trenowanie modelu ucznia wymaga par zdań w języku angielskim i języku docelowym.
+	Jest to dużo mniejsze ograniczenie, niż w przypadku bezpośredniego uczenia SBERT w docelowym języku.
+	Dostępne są wytrenowane modele\footnote{\url{https://www.sbert.net/docs/pretrained_models} (dostęp dnia 20 maja 2021)}, które obejmują również język polski.
+	Zostały one uwzględnione w rankingu modeli generujących reprezentacje zdań w języku polskim\cite{sentence_eval}.
+	W pracy tej autorzy przetłumaczyli popularny angielski korpus SICK (ang.\ \emph{Sentences Involving Compositional Knowledge})
+		zawierający pary zdań oznaczone pod kątem implikacji (ang.\ \emph{entailment}).
+	Każda para może być albo powiązana (prawdziwość pierwszego zdania oznacza prawdziwość drugiego), neutralna (pierwsze zdanie nie mówi nic o prawdziwości drugiego), albo sprzeczna.
+	Na podstawie tego korpusu stworzono dwa zadania odpowiadające angielskim --- SICK-E (zadanie klasyfikacji) oraz SICK-R (zadanie przewidywania dystrybucji podobieństwa, mierzone miarą korelacji Pearsona).
+	
+	Na potrzeby tej pracy za najbardziej istotne zadanie uznano SICK-R, ponieważ sprawdza skuteczność oceniania podobieństwa semantycznego dwóch tekstów.
+	W tym zadaniu najlepszy wynik uzyskał wielojęzykowy model SBERT \verb|xlm-r-distilroberta-base-paraphrase-v1|
+		(aktualne wyniki znajdują się na stronie z kodem źródłowym\footnote{\url{https://github.com/sdadas/polish-sentence-evaluation} (dostęp dnia 20 maja 2021)}).
 
 \section{Wektory wypowiedzi}\label{sec:sentences}
-
-  Podział na zdania - trza bo:
+	Modele bazujące na architekturze BERT mają górne ograniczenie na długość zdania wejściowego.
+	Wynosi ono 512 tokenów, co odpowiada około 300 słowom.
+	Dodatkowo, zbiór danych uczących wykorzystywanych przez modele SBERT zawiera zwykle krótsze zdania,
+		przez co skuteczność tych modeli dla pełnego zakresu 512 tokenów może być gorsza niż oczekiwana.
+	Jak pokazano na rysunku~\ref{fig:word_count}, wypowiedzi sejmowe są często znacznie dłuższe niż ten limit.
+	Mediana liczby słów wynosząca 219 mieści się w limicie, jednak wypowiedzi złożone z więcej niż 300 słów stanowią prawie 39\% zbioru.
   \begin{figure}[ht]
     \begin{minipage}{.75\textwidth}\label{fig:word_count}
       \includegraphics[width=\textwidth]{rys03/word_count.png}
     \end{minipage}%
     \begin{minipage}{.25\textwidth}\label{tab:word_count}
       \small
-      \begin{tabularx}{\textwidth}{l|l}
+      \begin{tabularx}{\textwidth}{ll}
         Min & 21 \\ 
         Q1 & 119 \\ 
         Mediana & 219 \\
@@ -80,3 +106,74 @@
     \end{minipage}
     \caption{Dystrybucja długości wypowiedzi (zakres do 2000 słów)}
   \end{figure}
+
+	Z tego powodu postanowiono dzielić wypowiedzi na zdania, generować wektory dla każdego zdania, a następnie połączyć je w jeden wektor wynikowy dla całej wypowiedzi.
+	Rozważono następujące strategie:
+	\begin{itemize}
+		\item średnia,
+		\item średnia ważona,
+		\item wektor pierwszy w rankingu,
+		\item średnia pierwszych pięciu wektorów w rankingu
+	\end{itemize}
+	Do wygenerowania wag oraz rankingu potrzebna jest metoda oceniająca, na ile istotne jest każde zdanie w kontekście całej wypowiedzi.
+	Stworzono w tym celu dwie metody: jedna wykorzystująca algorytm LexRank oraz druga wykorzystująca TF-IDF\@.
+
+	\subsection{LexRank}
+		LexRank\cite{LexRank} to stworzony w 2004r.\ stochastyczny algorytm bazujący na teorii grafów, służący do generowania podsumowań długich tekstów.
+		Jako podsumowanie traktowany jest zbiór najistotniejszych zdań z tekstu --- jest to metoda ekstrakcyjna, która nie zmienia struktury zdań.
+		Istnieją nowe metody bazujące na uczeniu maszynowym, które jako podsumowanie generują nowy tekst zawierający sens dokumentu,
+			jednak na potrzeby tej pracy wymagany jest algorytm przypisujący wagi oryginalnym zdaniom.
+		
+		Algorytm konstruuje graf, gdzie wierzchołki odpowiadają zdaniom, a ich wartość obliczana jest algorytmem TF-IDF\@.
+		Krawędzie grafu odpowiadają wartości podobieństwa między dokumentami i mierzone są na miarą cosinusową.
+		Wizualizacja takiego grafu przedstawiona została na rysunku~\ref{fig:lexrank}.
+		\begin{figure}[ht]\label{fig:lexrank}
+			\centering
+			\includegraphics[width=0.3\linewidth]{rys03/lexrank.png}
+			\caption{Graf ważony miarą podobieństwa między zdaniami (wierzchołkami)\cite{LexRank}}
+		\end{figure}
+		Graf przedstawiony w postaci macierzy, po znormalizowaniu wierszy, jest macierzą stochastyczną
+			(macierz kwadratowa, w której każdy wiersz sumuje się do wartości 1), którą można potraktować jako łańcuch Markova.
+		Udowodnione jest, że łańcuch Markova jest zbieżny do rozkładu stacjonarnego, jeśli spełniony jest następujący warunek:
+		\[\lim_{x \to \infty}X^n = 1^T r\]
+		gdzie \(X\) to macierz stochastyczna, a \(r\) to rozkład stacjonarny łańcucha Markova.
+		Rozkład stacjonarny można interpretować jako prawdopodobieństwo że skończymy na danym elemencie przechodząc przez łańcuch, niezależnie od stanu początkowego.
+		Możemy go więc potraktować jako wektor centralny (ang.\ \emph{centrality vector}),
+			gdzie wartość każdego elementu informuje, jak bardzo centralne jest zdanie na danej pozycji.
+
+		W oryginalnej pracy autorzy mierzyli odległości pomiędzy wektorami TF-IDF\@.
+		Nic nie stoi jednak na przeszkodzie, aby w ich miejsce wstawić wektory wygenerowane przez model BERT\@.
+		Otrzymany w ten sposób wektor centralny posłuży jako wagi wektorów zdań oraz jako ranking.
+
+	\subsection{TF-IDF}
+		Alternatywną metodę ważenia zdań oparto na metodzie TF-IDF\@.
+		TF odnosi się do \emph{term-frequency} i oznacza częstość występowania danego słowa w dokumencie.
+		IDF oznacza \emph{inverse document-frequency}, zawiera wartości dla każdego słowa, informujące jak bardzo jest ono powszechne.
+		Im w większej liczbie dokumentów występuje dane słowo, tym mniej informacji niesie o konkretnym dokumencie.
+		Wartość IDF obliczana jest według następującego wzoru:
+		\[idf(t)=\log\left(\frac{1+n}{1+df(t)}\right) + 1\]
+		gdzie \(t\) oznacza słowo, \(n\) to liczba wszystkich dokumentów, a \(df(t)\) to częstość występowania słowa we wszystkich dokumentach.
+		Wartość \(tfidf(t)\) obliczana jest jako iloczyn \(tf(t)\) i \(idf(t)\).
+		
+		W pierwszym kroku wyuczono model na całym korpusie, aby skonstruować pełen słownik oraz wartości macierzy IDF\@.
+		Następnie podczas generowania wektorów wypowiedzi, obliczana jest macierz tf-idf, gdzie wierszami są kolejne zdania.
+		Dla każdego zdania kolumny są sumowane, dzięki czemu otrzymujemy wektor o długości równej liczbie zdań oznaczający,
+			na ile znaczące są słowa w zdaniu w kontekście całego korpusu (macierz IDF zawiera wartości uwzględniająca wszystkie dane).
+		Sama ta wartość nie może być jednak do porównywania zdań, gdyż dłuższe zdania będą miały wyższy wynik, nawet jeśli będą złożone z samych nieznaczących słów.
+		Podzielenie tych wartości przez liczę wykrytych słów w danym zdaniu (liczbę niezerowych kolumn w danym wierszu macierzy tf-idf) będzie miało odwrotny efekt
+			--- preferowane będą krótkie zdania z małą liczbą słów o wysokim wyniku tf-idf.
+		Dłuższe zdania, które mogą zawierać istotne informacje, będą miały niski wynik, gdyż naturalnie składają się również z mniej znaczących słów.
+		Postanowiono więc zbadać, jak zmienia się suma wartości tf-idf w zależności od liczby wykrytych słów.
+		Zależność ta przedstawiona została na wykresie ...... 
+		Poprzez aproksymację punktową do danych dopasowana została funkcja wykładnicza narysowana na wykresie kolorem czerwonym.
+		Aproksymacji poddane zostały cztery współczynniki według następującego wzoru:
+		\[a\cdot {(b\cdot x)}^c + d\]
+		dzięki czemu otrzymano następującą funkcję, której dobrym przybliżeniem jest pierwiastek kwadratowy:
+		\[0.91\cdot {(1.23\cdot x)}^{0.49} - 0.06\]
+		Odzwierciedla ona średnią sumę wartości tf-idf dla danej długości zdania.
+		Można więc przyjąć, że zdania poniżej tej krzywej są mniej istotne, niż zdania powyżej.
+		Wartości wszystkich zdań normalizowane są wartością tej funkcji, dzięki czemu nie są promowane ani długie zdania, ani krótkie.
+		Znormalizowane wartości zdań przedstawione zostały na wykresie ......
+		Wartości te użyte zostały jako wagi wektorów BERT oraz jako ranking zdań.
+
+\section{Alternatywne rozwiązania}
