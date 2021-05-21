@@ -162,8 +162,11 @@
           "**/*.xwm": true
         },
         "cSpell.words": [
+					"CBOW",
 					"NKJP",
 					"SBERT",
+					"kosinusow",
+					"kosinusową",
 					"lniono",
 					"morfosyntaktyczne",
 					"nieustrukturyzowanych",
