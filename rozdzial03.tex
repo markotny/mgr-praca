@@ -193,9 +193,38 @@
 
 \section{Alternatywne rozwiązania}
 	Modele oparte o transformery zajmują obecnie wysokie miejsca w rankingach, jednak nie są to jedyne metody dające dobre wyniki.
-	W celu porównania wyników wygenerowano wektory dwoma alternatywnymi metodami --- siecią konwolucyjną oraz standardowym TF-IDF.
+	W celu porównania wyników wygenerowano wektory dwoma alternatywnymi metodami --- siecią konwolucyjną oraz standardowym TF-IDF\@.
 
 	\subsection{Sieć konwolucyjna}
-		W 2019r. Google udostępniło wielojęzykowy wariant modelu USE (ang.\ \emph{Universal Sentence Encoder})\cite{use_multilingual}.
+		Sieci konwolucyjne wykorzystują warstwy połączone filtrami konwolucyjnymi nakładanymi na lokalne cechy.
+		Początkowo wykorzystywane do zagadnień związanych z przetwarzaniem obrazów,
+			znalazły zastosowanie również w pozostałych dziedzinach uczenia maszynowego, w tym NLP\@.
+		W 2019r. Google udostępniło wielojęzykowy wariant modelu USE (ang.\ \emph{Universal Sentence Encoder})\cite{use_multilingual} wspierający 16 języków, w tym polski.
 		W pracy tej opisano dwa warianty --- jeden wykorzystujący CNN oraz drugi opierający się na transformerach.
+		Model oparty na transformerach osiągnął drugi najlepszy wynik w zadaniu SICK-R w polskim rankingu Polish Sentence Evaluation\cite{sentence_eval}.
+		Wersja CNN modelu jest szybsza kosztem mniejszej dokładności.
+		Umożliwia ona jednak kodowanie znacznie dłuższych zdań (256 tokenów kontra 100).
+		Oba modele wytrenowane zostały na danych zebranych z forów dyskusyjnych (w postaci pytania i odpowiedzi)
+			oraz na zbiorze SNLI (Stanford Natural Language Inference) przetłumaczonym na pozostałe 15 języków za pomocą Google Translate.
+
+	\subsection{TF-IDF}
+		W przeciwieństwie do omawianych wyżej modeli, w przypadku TF-IDF długość wypowiedzi działa na korzyść algorytmu.
+		Im dłuższa wypowiedź, tym większa szansa na uzyskanie kombinacji słów dokładniej identyfikującej dokument.
+		Algorytm ten nie posiada żadnego górnego ograniczenia na długość dokumentu.
+		Algorytm podczas zliczania liczby wystąpień danego słowa nie bierze pod uwagę odmian słów,
+			przez co słowa ,,budżet'' i ,,budżetu'' są traktowane jako osobne kategorie.
+		Jest to szczególnie istotne w językach słowiańskich, ponieważ wykorzystywanych jest w nich mnóstwo odmian słów.
 		
+		Aby zminimalizować wynikającą z tego działania utratę informacji, zdecydowano się wstępnie przetworzyć dokumenty przed zliczeniem słów.
+		Wykorzystano w tym celu polski model do biblioteki \verb|spaCy|
+			--- \verb|pl_spacy_model_morfeusz|\cite{spacy_pl} udostępniony przez Instytut Podstaw Informatyki Polskiej Akademii Nauk\footnote{\url{http://zil.ipipan.waw.pl/SpacyPL} (dostęp dnia 21 maja 2021)}.
+		Biblioteka umożliwia między innymi lematyzację (sprowadzenie słowa do formy podstawowej) każdego słowa w zdaniu.
+		Wykorzystuje przy tym wyuczony model, który rozpoznaje strukturę zdania --- przykładowo, czy dane słowo jest w danym kontekście rzeczownikiem, czy czasownikiem.
+		Następnie na podstawie tej wiedzy może określić formę podstawową słowa.
+		Polski model na tym etapie wykorzystuje słownik morfologiczny Morfeusz2\cite{morfeusz}.
+		Zbudowany jest on na danych ze Słownika gramatycznego języka polskiego.
+
+		Podczas tokenizacji dokumentów generowane są również n-gramy z zakresu (1,3).
+		Oznacza to, że zliczane będą również wystąpienia dwóch oraz trzech kolejnych słów (np. ,,Unia Europejska'', ,,Rzecznik praw obywatelskich'').
+		Dodatkowo, przyjęto próg odrzucenia \verb|min_df| równy 5 oznaczający, że dany token musi wystąpić minimum 5 razy,
+			aby był uwzględniony w wynikowej macierzy.
