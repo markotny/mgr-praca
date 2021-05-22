@@ -35,22 +35,29 @@
   archiveprefix = {arXiv},
   primaryclass  = {cs.CL}
 }
-@inbook{BoW_PL,
-  author = {Walkowiak, Tomasz and Datko, Szymon and Maciejewski, Henryk},
-  year   = {2019},
-  month  = {01},
-  pages  = {526-535},
-  title  = {Bag-of-Words, Bag-of-Topics and Word-to-Vec Based Subject Classification of Text Documents in Polish - A Comparative Study},
-  isbn   = {978-3-319-91445-9},
-  doi    = {10.1007/978-3-319-91446-6_49}
+@inproceedings{BoW_PL,
+  author    = {Walkowiak, Tomasz
+							and Datko, Szymon
+							and Maciejewski, Henryk},
+  editor    = {Zamojski, Wojciech
+							and Mazurkiewicz, Jacek
+							and Sugier, Jaros{\l}aw
+							and Walkowiak, Tomasz
+							and Kacprzyk, Janusz},
+  title     = {Bag-of-Words, Bag-of-Topics and Word-to-Vec Based Subject Classification of Text Documents in Polish - A Comparative Study},
+  booktitle = {Contemporary Complex Systems and Their Dependability},
+  year      = {2019},
+  publisher = {Springer International Publishing},
+  address   = {Cham},
+  pages     = {526--535},
+  isbn      = {978-3-319-91446-6}
 }
 @article{BERT,
   author        = {Jacob Devlin and
-               Ming{-}Wei Chang and
-               Kenton Lee and
-               Kristina Toutanova},
-  title         = {{BERT:} Pre-training of Deep Bidirectional Transformers for Language
-               Understanding},
+									Ming{-}Wei Chang and
+									Kenton Lee and
+									Kristina Toutanova},
+  title         = {{BERT:} Pre-training of Deep Bidirectional Transformers for Language Understanding},
   journal       = {CoRR},
   volume        = {abs/1810.04805},
   year          = {2018},
@@ -100,8 +107,8 @@
 }
 @article{sentence_eval,
   author        = {Slawomir Dadas and
-               Michal Perelkiewicz and
-               Rafal Poswiata},
+									Michal Perelkiewicz and
+									Rafal Poswiata},
   title         = {Evaluation of Sentence Representations in Polish},
   journal       = {CoRR},
   volume        = {abs/1910.11834},
@@ -134,15 +141,6 @@
   archiveprefix = {arXiv},
   primaryclass  = {cs.CL}
 }
-@misc{BERTopic,
-  author    = {Maarten Grootendorst},
-  title     = {BERTopic: Leveraging BERT and c-TF-IDF to create easily interpretable topics.},
-  year      = 2020,
-  publisher = {Zenodo},
-  version   = {v0.7.0},
-  doi       = {10.5281/zenodo.4381785},
-  url       = {https://doi.org/10.5281/zenodo.4381785}
-}
 @inproceedings{spacy_pl,
   author    = {Ryszard Tuora and Łukasz Kobyliński},
   title     = {Integrating Polish Language Tools and Resources in spaCy},
@@ -168,4 +166,45 @@
   key          = {LREC},
   year         = {2014},
   organization = {European Language Resources Association (ELRA)}
+}
+@article{LDA,
+  author     = {Blei, David M. and Ng, Andrew Y. and Jordan, Michael I.},
+  title      = {Latent Dirichlet Allocation},
+  year       = {2003},
+  issue_date = {3/1/2003},
+  publisher  = {JMLR.org},
+  volume     = {3},
+  number     = {null},
+  issn       = {1532-4435},
+  journal    = {J. Mach. Learn. Res.},
+  month      = mar,
+  pages      = {993–1022},
+  numpages   = {30}
+}
+@misc{BERTopic,
+  author    = {Maarten Grootendorst},
+  title     = {BERTopic: Leveraging BERT and c-TF-IDF to create easily interpretable topics.},
+  year      = 2020,
+  publisher = {Zenodo},
+  version   = {v0.7.0},
+  doi       = {10.5281/zenodo.4381785},
+  url       = {https://doi.org/10.5281/zenodo.4381785}
+}
+@article{UMAP,
+  title   = {UMAP: Uniform Manifold Approximation and Projection},
+  author  = {McInnes, Leland and Healy, John and Saul, Nathaniel and Grossberger, Lukas},
+  journal = {The Journal of Open Source Software},
+  volume  = {3},
+  number  = {29},
+  pages   = {861},
+  year    = {2018}
+}
+@article{HDBSCAN,
+  title   = {hdbscan: Hierarchical density based clustering},
+  author  = {McInnes, Leland and Healy, John and Astels, Steve},
+  journal = {The Journal of Open Source Software},
+  volume  = {2},
+  number  = {11},
+  pages   = {205},
+  year    = {2017}
 }

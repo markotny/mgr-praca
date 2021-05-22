@@ -6,4 +6,6 @@ RUN apt update && apt install -y \
 
 RUN tlmgr option repository http://mirror.ctan.org/systems/texlive/tlnet && \
     tlmgr update --self && \
-    tlmgr install chktex babel-polish gustlib memoir ebgaramond xkeyval fontaxes tex-gyre listings xpatch etoolbox layouts printlen enumitem datetime fmtcount
+    tlmgr install chktex babel-polish gustlib memoir ebgaramond xkeyval fontaxes \
+			tex-gyre listings xpatch etoolbox layouts printlen enumitem datetime fmtcount \
+			todonotes

@@ -10,6 +10,7 @@
 	Architektura takich modeli opiera się na sieciach neuronowych próbujących przewidzieć słowo w zależności od kontekstu
 		(modele CBOW --- ang. \emph{Continuous bag-of-words}) lub kontekst w zależności od słowa (ang.\ \emph{skip-gram})\cite{word2vec}, gdzie kontekst to otaczające słowa.
 	Wadą tych modeli jest fakt, że są one niekontekstowe.
+	\todo{odnieść się do\cite{BoW_PL}}
 	Oznacza to, że po nauczeniu modelu, gdy chcemy go wykorzystać do obliczenia wektora danego słowa, to otrzymany wektor nie bierze pod uwagę kontekstu, w jakim występuje to słowo.
 	Przykładowo słowo ,,zamek'' będzie reprezentowane przez taki sam wektor niezależnie od tego,
 		czy w danym zdaniu odnosi się do zabezpieczenia antywłamaniowego, czy też widowiskowej dolnośląskiej budowli obronnej.
@@ -226,5 +227,5 @@
 
 		Podczas tokenizacji dokumentów generowane są również n-gramy z zakresu (1,3).
 		Oznacza to, że zliczane będą również wystąpienia dwóch oraz trzech kolejnych słów (np. ,,Unia Europejska'', ,,Rzecznik praw obywatelskich'').
-		Dodatkowo, przyjęto próg odrzucenia \verb|min_df| równy 5 oznaczający, że dany token musi wystąpić minimum 5 razy,
+		Dodatkowo, przyjęto próg odrzucenia \verb|min_df| równy 5 oznaczający, że dany token musi wystąpić w minimum pięciu dokumentach,
 			aby był uwzględniony w wynikowej macierzy.

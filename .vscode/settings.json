@@ -163,23 +163,31 @@
         },
         "cSpell.words": [
 					"CBOW",
+					"HDBSCAN",
+					"Hellingera",
 					"NKJP",
 					"SBERT",
 					"SNLI",
+					"UMAP",
 					"konwolucyjna",
 					"konwolucyjne",
 					"konwolucyjnymi",
 					"kosinusow",
+					"kosinusowej",
 					"kosinusową",
 					"lematyzacj",
+					"lematyzacji",
 					"lematyzację",
 					"lematyzowane",
 					"lniono",
 					"morfosyntaktyczne",
 					"nieustrukturyzowanych",
+					"niskowymiarowej",
+					"riemannowskiej",
 					"tfidf",
 					"tokenizacji",
 					"uwsp",
-					"uwspólniono"
+					"uwspólniono",
+					"wysokowymiarowych"
 				]
 }
