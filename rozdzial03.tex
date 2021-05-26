@@ -24,7 +24,7 @@
 	Przykład zilustrowany na rysunku~\ref{fig:attention} przedstawia wagi poszczególnych słów w zdaniu ,,The animal didn't cross the street because it was too tired'' w kontekście słowa ,,it''.
 	Zaimek ten może odnosić się zarówno do zwierzęcia z początku zdania (ang.\ \emph{The animal}), jak i ulicy (ang.\ \emph{the street}).
 	Mechanizm przypisał największą wagę do zwierzęcia, co jest poprawnym działaniem w kontekście tego zdania.
-	\begin{figure}[ht]
+	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=.5\textwidth]{rys03/transformer_attention.png}
 		\caption{Mechanizm atencji --- wizualizacja wag poszczególnych słów podczas analizy słowa ,,it''.
@@ -51,7 +51,7 @@
 	Architektura ta przedstawiona została na rysunku~\ref{fig:sbert}.
 	W celu uzyskania wektorów kodujących semantykę całych zdań, model uczony jest na korpusach zawierających pary zdań oznaczone pod kątem podobieństwa.
 	Optymalizuje się odległość między podobnymi zdaniami, jednocześnie maksymalizując odległości między zdaniami różnymi.
-	\begin{figure}[ht]
+	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=0.3\linewidth]{rys03/sbert.png}
 		\caption{Architektura modelu Sentence-BERT\cite{sbert}}\label{fig:sbert}
@@ -65,7 +65,7 @@
 	Jest to wielojęzykowy model bazujący na architekturze RoBERTa (wariacja BERT stworzona przez Facebook), wytrenowany na 2.5TB danych z CommonCrawl w 100 językach, w tym polskim\cite{xml_r}.
 	Model ten zajmuje obecnie ósme miejsce w rankingu KLEJ\footnote{\url{https://klejbenchmark.com/leaderboard} (dostęp dnia 20 maja 2021)}
 		oraz drugie miejsce po dostrojeniu (ang.\ \emph{fine-tuning}) na dodatkowych polskich korpusach.
-	\begin{figure}[ht]
+	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=.75\linewidth]{rys03/sbert_multilingual.png}
 		\caption{Układ modeli nauczyciel-uczeń w procesie uczenia wielojęzykowego SBERT\cite{sbert_multilingual}}\label{fig:sbert_multilingual}
@@ -91,7 +91,7 @@
 		przez co skuteczność tych modeli dla pełnego zakresu 512 tokenów może być gorsza niż oczekiwana.
 	Jak pokazano na rysunku~\ref{fig:word_count}, wypowiedzi sejmowe są często znacznie dłuższe niż ten limit.
 	Mediana liczby słów wynosząca 219 mieści się w limicie, jednak wypowiedzi złożone z więcej niż 300 słów stanowią prawie 39\% zbioru.
-  \begin{figure}[ht]
+  \begin{figure}[htb]
     \begin{minipage}{.75\textwidth}
       \includegraphics[width=\textwidth]{rys03/word_count.png}
     \end{minipage}%

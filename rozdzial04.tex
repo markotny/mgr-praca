@@ -56,27 +56,27 @@
 	Dla niskich wartości koncentruje się na lokalnej strukturze nie biorąc pod uwagę pełnego obrazu danych.
 	Wysokie wartości skutkują utratą szczegółów, ukazując bardziej ogólne zależności.
 	Wpływ tego parametru zobrazowany został na rysunku~\ref{fig:umap} dla wartości 5, 15 oraz 100.
-	W celu wizualizacji dane zredukowane zostały do dwóch wymiarów, a kolory odpowiadają klastrom wykrytym przez HDBSCAN.
+	W celu wizualizacji dane zredukowane zostały do dwóch wymiarów,
+		a kolory odpowiadają klastrom wykrytym przez HDBSCAN (dla minimalnego rozmiaru klastra równego 100).
+	Dla niskiej wartości parametru \verb|n_neighbors| powstało wiele lokalnych grup o niskiej liczebności.
+	Wraz ze wzrostem wartości parametru lokalne grupy łączą się w coraz większe klastry.
 
 	\begin{figure}[htb]
 		\centering
 		\begin{minipage}{.33\textwidth}
 			a)\par\medskip % chktex 10
-			\missingfigure[figwidth=\linewidth]{UMAP dla n=5}
+			\includegraphics[width=\linewidth]{rys04/umap_5_100_100.png}
 			n\_neighbors = 5
-			% \includegraphics[width=\linewidth]{}
 		\end{minipage}%
 		\begin{minipage}{.33\textwidth}
 			b)\par\medskip % chktex 10
-			\missingfigure[figwidth=\linewidth]{UMAP dla n=15}
+			\includegraphics[width=\linewidth]{rys04/umap_15_100_100.png}
 			n\_neighbors = 15
-			% \includegraphics[width=\linewidth]{}
 		\end{minipage}%
 		\begin{minipage}{.33\textwidth}
 			c)\par\medskip % chktex 10
-			\missingfigure[figwidth=\linewidth]{UMAP dla n=100}
+			\includegraphics[width=\linewidth]{rys04/umap_100_100_100.png}
 			n\_neighbors = 100
-			% \includegraphics[width=\linewidth]{}
 		\end{minipage}
 		\caption{Dwuwymiarowa reprezentacja danych przez UMAP w zależności od wartości parametru n\_neighbors}\label{fig:umap} % chktex 9 chktex 10
 	\end{figure}
