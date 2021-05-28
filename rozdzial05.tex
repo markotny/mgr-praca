@@ -1,9 +1,16 @@
 % !TeX root = ./Dyplom.tex
+% chktex-file 21
 
-\chapter{Analiza skuteczności modeli}
-\todo{Opisać\cite{Eval_Topics}\cite{U_MASS}\cite{C_NPMI}}
+\chapter{Ocena skuteczności modeli}
+	Analizowane algorytmy są nienadzorowane, co oznacza, że nie ma jednoznacznej metody oceny wyników.
+	Najpopularniejszą metodą ewaluacji wygenerowanych tematów jest analiza reprezentacji tematów (zbioru słów opisujących temat).
+	Im lepiej słowa opisujące temat reprezentują wszystkie dokumenty w danym temacie, tym lepszy model.
 
-\section{Ewaluacja spójności}
+\section{Ewaluacja spójności reprezentacji tematów}
+
+\todo{\cite{Eval_Topics}\cite{U_MASS}\cite{C_NPMI}}
+
+\section{Ewaluacja spójności rozkładu tematów}
 	Ze względu na specyfikę korpusu możliwe jest również sformułowanie metryki wykorzystującej porządek obrad sejmu.
 	Każde posiedzenie przebiega zgodnie z ustaloną strukturą, gdzie marszałek zarządza obrady na temat danej ustawy, poprawki czy interpelacji,
 		a następnie kolejni posłowie wyrażają swoją opinię na ten temat.
@@ -22,13 +29,13 @@
 	Mechanizm ten zapobiega sytuacji, w której duża liczba nieprzypisanych dokumentów zawyżałaby wynik.
 	Dzieje się tak ze względu na to, że nieprzypisane dokumenty często stanowią znaczną część zbioru (30--50\%),
 		przez co istnieje duże prawdopodobieństwo znalezienia par takich dokumentów.
-	Dodatkowo od sumy różniących się par odejmowana jest liczba o 1 mniejsza od liczby tematów danego dnia.
+	Dodatkowo, od sumy różniących się par odejmowana jest liczba o 1 mniejsza od liczby tematów danego dnia.
 	Działanie to rekompensuje przejścia między tematami, które muszą wystąpić i nie są błędem.
 	Takich przejść w ciągu dnia wystąpi co najmniej tyle, ile jest tematów minus jeden.
 	Końcowy wynik obliczany jest jako stosunek zgadzających się par do wszystkich zliczonych par.
 	
 	\begin{lstlisting}[style=algorithm,label=lst:consistency,caption=Algorytm obliczania spójności tematów]
-input: speeches sorted by original order of speaking with date and assigned topic identifier
+input: speeches sorted by original order of speaking, with date and assigned topic identifier
 output: consistency score between 0 and 1 with higher score indicating more consistent topics
 	
 same_per_day := []
@@ -58,3 +65,59 @@ for each speeches in data grouped by date do
 score = sum(same_per_day) / sum(same_per_day, different_per_day)
 return score
 	\end{lstlisting}
+
+\section{Końcowa ocena}
+	Powyższe metody nie poddają ocenie samej liczby tematów i liczby nieprzyporządkowanych dokumentów.
+	Z tego powodu, wysoki wynik mógłby osiągnąć model, który znalazłby zaledwie 5 tematów.\todo{Pokazać jakieś dane-rysunek albo tabelka}
+	Taki model przyporządkuje wszystkie dokumenty generując bardzo ogólne tematy.
+	Podobnie wysoki wynik osiągnie model, który wygeneruje tysiące bardzo szczegółowych tematów.
+	Takie modele można odfiltrować definiując odpowiednie progi, jednak taka metoda wymusza ustanowienie założeń,
+		które niekoniecznie będą optymalne.
+	Zamiast tego, stworzone zostały dwie dodatkowe miary: jedna ocenia liczbę przyporządkowanych dokumentów \(s_f\), druga ocenia liczbę tematów \(s_T\).
+	Końcowa ocena modelu jest średnią ocen \(u_{MASS}\), \(s_c\), \(s_f\), \(s_T\) przeskalowanych do pełnego zakresu (0, 1).
+
+	\subsection{Ocena liczby przyporządkowanych dokumentów}
+		Miara oceniająca liczbę przyporządkowanych dokumentów korzysta bezpośrednio z wyniku grupowania.
+		Grupa oznaczona jako '-1' oznacza dokumenty, które nie zostały zgrupowane, a więc nie mają przypisanego tematu.
+		Rozmiar tej grupy odejmowany jest od rozmiaru korpusu uzyskując liczbę dokumentów z rozpoznanymi tematami.
+		Liczba ta dzielona jest przez rozmiar korpusu, co daje miarę w przedziale (0, 1).
+		\todo{jakiś rysunek czy coś}
+
+	\subsection{Ocena liczby tematów}
+		Dużo trudniej jest ocenić liczbę tematów, gdyż zarówno osiemdziesiąt ogólnych tematów,
+			jak i tysiąc szczegółowych mogą zostać uznane za odpowiednie.
+		Zważając jednak na specyfikę korpusu, przyjęto że różnorodność poruszanych kwestii powinna skutkować relatywnie dużą liczbą tematów.
+		Z tego powodu uznano, że zbyt ogólne tematy nie są odpowiednie w tym kontekście.
+		Nadmiernie szczegółowe, a więc o małej liczebności tematy również tracą informacje o zależnościach między dokumentami,
+			więc także uznane zostały za niepożądane.
+		W takim wypadku za odpowiednią liczbę tematów przyjęto medianę liczby tematów dla wszystkich testowanych modeli.
+		Wyniosła ona 295.\todo{Poprawić po dodaniu wszystkich danych}
+
+		W celu określenia wyniku każdego modelu wykorzystano zmodyfikowaną standaryzację Z.
+		Standaryzacja Z obliczana jest zgodnie z następującym wzorem:
+		\[z=\frac{x-\mu}{\sigma}\]
+		gdzie:
+		\begin{itemize}
+			\item \(x\) wartość zmiennej,
+			\item \(\mu\) średnia z populacji,
+			\item \(\sigma\) odchylenie standardowe populacji.
+		\end{itemize}
+		
+		Średnia arytmetyczna i odchylenie standardowe są jednak podatne na wpływ wartości leżących daleko od średniej.
+		Z tego powodu często wykorzystywana jest zmodyfikowana standaryzacja Z, która mierzy odległości od mediany:
+		\[\tilde{z}=\frac{x-\tilde{x}}{k\cdot MAD}\]
+		gdzie:
+		\begin{itemize}
+			\item \(x\) wartość zmiennej,
+			\item \(\tilde{x}\) mediana z populacji,
+			\item \(k=1.486\) wartość korekcyjna stanowiąca przybliżenie odchylenia standardowego,
+			\item \(MAD\) średnie odchylenie bezwzględne --- \(median\left(|x_i-\tilde{x}|\right)\).
+		\end{itemize}
+
+		Tak ustandaryzowane dane rozłożone są wokół zera, gdzie liczby tematów mniejsze od mediany mają ujemny wynik, a większe dodatni.
+		Takie odległości interpretowane są jako odległości od najlepszej liczby tematów,
+			im większa odległość tym gorszy powinien być wynik takiego modelu.
+		Aby wyrazić te odległości w skali (0, 1), gdzie 1 to najlepszy wynik, znormalizowano dane
+			poprzez odwrócenie wartości bezwzględnej standaryzacji Z powiększonej o 1 (aby minimalna wartość była równa 1):
+		\[s_T=\frac{1}{|\tilde{z}|+1}\]
+		\todo{rys}
