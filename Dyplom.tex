@@ -92,13 +92,16 @@
 % Bez zmiany dodatkowych parametrów pojawiają się one na marginesie strony (co jest nieporządane).
 
 \lstset{
-  basicstyle=\small\ttfamily, % lub basicstyle=\footnotesize\ttfamily
+  % basicstyle=\small\ttfamily, % lub basicstyle=\footnotesize\ttfamily
+	basicstyle =\footnotesize,
   %%columns=fullflexible,
 	%%showstringspaces=false,
 	%%showspaces=false,
   breaklines=true,
   postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space}, 
-  %%numbers=left,  % ta i poniższe linie dotyczą ustawienia numerowania i sposobu jego wyprowadzania
+  numbers=left,  % ta i poniższe linie dotyczą ustawienia numerowania i sposobu jego wyprowadzania
+	tabsize=2,
+	frame=l,
   %%firstnumber=1, 
   %%numberfirstline=true, 
 	%%xleftmargin=17pt,
@@ -223,6 +226,20 @@ captionpos=t
 	numberstyle={\footnotesize\ttfamily\color{dark-grey}},
 	xleftmargin			= 2em % zamarkować, jeśli numeracja linii jest niepotrzebna
 }
+
+\lstdefinestyle{algorithm}{
+	mathescape=true,
+	frame=tB,
+	numbers=left, 
+	numberstyle=\tiny,
+	basicstyle=\scriptsize, 
+	keywordstyle=\color{black}\bfseries\em,
+	keywords={,input, output, return, datatype, function, in, if, else, for, each, while, begin, end, do, }
+	numbers=left,
+	xleftmargin=.04\textwidth,
+	postbreak=\space
+}
+
 
 \newcommand\processColon@json{%
 	\colon@json%

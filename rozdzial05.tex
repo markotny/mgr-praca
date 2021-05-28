@@ -1,3 +1,60 @@
 % !TeX root = ./Dyplom.tex
 
 \chapter{Analiza skuteczności modeli}
+\todo{Opisać\cite{Eval_Topics}\cite{U_MASS}\cite{C_NPMI}}
+
+\section{Ewaluacja spójności}
+	Ze względu na specyfikę korpusu możliwe jest również sformułowanie metryki wykorzystującej porządek obrad sejmu.
+	Każde posiedzenie przebiega zgodnie z ustaloną strukturą, gdzie marszałek zarządza obrady na temat danej ustawy, poprawki czy interpelacji,
+		a następnie kolejni posłowie wyrażają swoją opinię na ten temat.
+	Można więc założyć, że w obrębie debaty nad jednym punktem obrad, wypowiedzi powinny zostać zakwalifikowane do tego samego zbioru tematycznego.
+	Stworzono więc algorytm wykorzystujący tę zależność, przedstawiony na listingu\ref{lst:consistency}.
+	Założono, że w zdecydowanej większości przypadków, kolejne dwie wypowiedzi powinny mieć przypisany ten sam temat.
+
+	Algorytm analizuje osobno każdy dzień posiedzeń.
+	Wypowiedzi sortowane są zgodnie z kolejnością wynikającą z transkrypcji przemówień.
+	Jeśli w ciągu dnia jest mniej niż dwie wypowiedzi, to dzień jest pomijany.
+	W zbiorze danych występuje jeden taki przypadek, natomiast mediana wynosi 138.
+	Wśród wypowiedzi danego dnia porównywane są tematy par sąsiadujących wypowiedzi.
+	Zliczane są zarówno znalezione pasujące pary, jak i różniące się.
+	Jeśli temat analizowanej wypowiedzi jest nieznany (algorytm HDBSCAN nie przypisał dokumentu do żadnej grupy),
+		to jest ona pomijana.
+	Mechanizm ten zapobiega sytuacji, w której duża liczba nieprzypisanych dokumentów zawyżałaby wynik.
+	Dzieje się tak ze względu na to, że nieprzypisane dokumenty często stanowią znaczną część zbioru (30--50\%),
+		przez co istnieje duże prawdopodobieństwo znalezienia par takich dokumentów.
+	Dodatkowo od sumy różniących się par odejmowana jest liczba o 1 mniejsza od liczby tematów danego dnia.
+	Działanie to rekompensuje przejścia między tematami, które muszą wystąpić i nie są błędem.
+	Takich przejść w ciągu dnia wystąpi co najmniej tyle, ile jest tematów minus jeden.
+	Końcowy wynik obliczany jest jako stosunek zgadzających się par do wszystkich zliczonych par.
+	
+	\begin{lstlisting}[style=algorithm,label=lst:consistency,caption=Algorytm obliczania spójności tematów]
+input: speeches sorted by original order of speaking with date and assigned topic identifier
+output: consistency score between 0 and 1 with higher score indicating more consistent topics
+	
+same_per_day := []
+different_per_day := []
+
+for each speeches in data grouped by date do
+	if len(speeches) < 2
+		continue
+	
+	same := 0
+	different := 0
+	for i in range(len(speeches) - 1) do
+		if speeches[i].topic is unknown
+			continue
+
+		if speeches[i].topic = speeches[i + 1].topic
+			same := same + 1
+		else
+			different := different + 1
+
+	topic_count := len(speeches.topic.unique())
+	different := different - (topic_count - 1)
+	
+	same_per_day.append(same)
+	different_per_day.append(different)
+
+score = sum(same_per_day) / sum(same_per_day, different_per_day)
+return score
+	\end{lstlisting}
