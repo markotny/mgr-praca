@@ -3,19 +3,46 @@
 
 \chapter{Ocena skuteczności modeli}
 	Analizowane algorytmy są nienadzorowane, co oznacza, że nie ma jednoznacznej metody oceny wyników.
-	Najpopularniejszą metodą ewaluacji wygenerowanych tematów jest analiza reprezentacji tematów (zbioru słów opisujących temat).
-	Im lepiej słowa opisujące temat reprezentują wszystkie dokumenty w danym temacie, tym lepszy model.
+	Jedyną metodą ewaluacji modeli tematycznych dającą pewność jest manualna weryfikacja poprzez np.\ ocenianie w trzystopniowej skali,
+		które reprezentacje tematów są spójne, a które nie.
+	Jest to jednak kosztowna metoda, dlatego tworzy się algorytmy dające dobre przybliżenie ocen człowieka.
+	Ocena spójności tematów według takich algorytmów porównywana jest z ocenami człowieka poprzez współczynnik korelacji Pearsona.
+
+	Alternatywną metodą zaproponowaną w~\cite{Word_intrusion} jest podmiana słowa w reprezentacji tematu (ang.\ \emph{word intrusion task}).
+	W wygenerowanych zestawach słów podmieniane jest jedno słowo na losowe.
+	Następnie uczestnicy badania muszą zidentyfikować podmienione słowo.
+	Jeśli tematy są spójne, to niepasujące słowo powinno być łatwe do zidentyfikowania,
+		natomiast w mniej spójnych tematach słowa będą sprawiały wrażenie bardziej losowych, co utrudni poprawne rozwiązanie problemu.
 
 \section{Ewaluacja spójności reprezentacji tematów}
+	Najpopularniejszą metodą ewaluacji wygenerowanych tematów jest analiza reprezentacji tematów (zbioru słów opisujących temat).
+	Im lepiej słowa opisujące temat reprezentują wszystkie dokumenty w danym temacie, tym lepszy model.
+	W pracy~\cite{U_MASS} autorzy proponują algorytm (zwany dalej \(C_{UMass}\))
+		analizujący pary słów z reprezentacji tematu pod kątem współwystępowania w dokumentach korpusu.
+	Jeśli para słów często występuje razem w dokumentach, to są one powiązane.
+	Można więc określić spójność całej reprezentacji tematu badając wszystkie w niej zawarte pary słów.
+	Miara ta porównana została z wynikami zadania podmiany słowa i uzyskała ona lepszą korelację z ocenami ludzi.
+	\todo{Wykresiki}
 
-\todo{\cite{Eval_Topics}\cite{U_MASS}\cite{C_NPMI}}
+	Autorzy~\cite{C_NPMI} proponują rozwiązanie bazujące na wektorach kontekstowych słów tematu (zwane dalej \(C_{NPMI}\)).
+	Wektory te są obliczane na podstawie współwystępujących słów w kontekście analizowanego słowa.
+	Kontekst jest definiowany jako tzw.\ przesuwne okno (ang.\ \emph{sliding window}) zwierające \(\pm 5\) otaczających słów.
+	Następnie wektory są ważone algorytmem NPMI (ang.\ \emph{Normalized Point Mutual Information}).
+	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami wektorów kontekstowych słów tematu.
+	\todo{też jakieś wykresiki}
+
+	W pracy~\cite{Eval_Topics} autorzy stworzyli bazową strukturę pozwalającą na zdefiniowanie metryk \(C_{UMass}\), \(C_{NPMI}\)
+		oraz innych miar spójności w jednej przestrzeni.
+	W projekcie skorzystano z biblioteki \verb|Gensim|\footnote{\url{https://radimrehurek.com/gensim/models/coherencemodel.html} (dostęp dnia 29 maja 2021)},
+		która implementuje miary spójności na podstawie tych definicji.
 
 \section{Ewaluacja spójności rozkładu tematów}
 	Ze względu na specyfikę korpusu możliwe jest również sformułowanie metryki wykorzystującej porządek obrad sejmu.
 	Każde posiedzenie przebiega zgodnie z ustaloną strukturą, gdzie marszałek zarządza obrady na temat danej ustawy, poprawki czy interpelacji,
 		a następnie kolejni posłowie wyrażają swoją opinię na ten temat.
 	Można więc założyć, że w obrębie debaty nad jednym punktem obrad, wypowiedzi powinny zostać zakwalifikowane do tego samego zbioru tematycznego.
-	Stworzono więc algorytm wykorzystujący tę zależność, przedstawiony na listingu\ref{lst:consistency}.
+	Stworzono więc algorytm wykorzystujący tę zależność, przedstawiony na listingu~\ref{lst:consistency_alg}.
+	Implementacja algorytmu w języku Python pokazana jest na listingu~\ref{lst:score_consistency}.
 	Założono, że w zdecydowanej większości przypadków, kolejne dwie wypowiedzi powinny mieć przypisany ten sam temat.
 
 	Algorytm analizuje osobno każdy dzień posiedzeń.
@@ -34,7 +61,7 @@
 	Takich przejść w ciągu dnia wystąpi co najmniej tyle, ile jest tematów minus jeden.
 	Końcowy wynik obliczany jest jako stosunek zgadzających się par do wszystkich zliczonych par.
 	
-	\begin{lstlisting}[style=algorithm,label=lst:consistency,caption=Algorytm obliczania spójności tematów]
+	\begin{lstlisting}[style=algorithm,label=lst:consistency_alg,caption=Algorytm obliczania spójności tematów]
 input: speeches sorted by original order of speaking, with date and assigned topic identifier
 output: consistency score between 0 and 1 with higher score indicating more consistent topics
 	
@@ -74,13 +101,17 @@ return score
 	Takie modele można odfiltrować definiując odpowiednie progi, jednak taka metoda wymusza ustanowienie założeń,
 		które niekoniecznie będą optymalne.
 	Zamiast tego, stworzone zostały dwie dodatkowe miary: jedna ocenia liczbę przyporządkowanych dokumentów \(s_f\), druga ocenia liczbę tematów \(s_T\).
-	Końcowa ocena modelu jest średnią ocen \(u_{MASS}\), \(s_c\), \(s_f\), \(s_T\) przeskalowanych do pełnego zakresu (0, 1).
+	Końcowa ocena modelu jest średnią ocen \(C_{UMass}\), \(s_c\), \(s_f\), \(s_T\)\todo{ustalić końcowy zestaw} przeskalowanych do pełnego zakresu (0, 1).
+	Skalowanie odbywa się przy pomocy klasy \verb|MinMaxScaler| z biblioteki \verb|scikit-learn|,
+		jak przedstawiono w linijce 18 listingu~\ref{lst:final_score}.
 
 	\subsection{Ocena liczby przyporządkowanych dokumentów}
 		Miara oceniająca liczbę przyporządkowanych dokumentów korzysta bezpośrednio z wyniku grupowania.
 		Grupa oznaczona jako '-1' oznacza dokumenty, które nie zostały zgrupowane, a więc nie mają przypisanego tematu.
 		Rozmiar tej grupy odejmowany jest od rozmiaru korpusu uzyskując liczbę dokumentów z rozpoznanymi tematami.
 		Liczba ta dzielona jest przez rozmiar korpusu, co daje miarę w przedziale (0, 1).
+		Działanie to przedstawione jest w linijce 16 listingu~\ref{lst:final_score},
+			gdzie \verb|scores['not_found'| to kolumna tabeli zawierająca rozmiar grupy nieprzyporządkowanych dokumentów dla każdego modelu.
 		\todo{jakiś rysunek czy coś}
 
 	\subsection{Ocena liczby tematów}
@@ -90,8 +121,8 @@ return score
 		Z tego powodu uznano, że zbyt ogólne tematy nie są odpowiednie w tym kontekście.
 		Nadmiernie szczegółowe, a więc o małej liczebności tematy również tracą informacje o zależnościach między dokumentami,
 			więc także uznane zostały za niepożądane.
-		W takim wypadku za odpowiednią liczbę tematów przyjęto medianę liczby tematów dla wszystkich testowanych modeli.
-		Wyniosła ona 295.\todo{Poprawić po dodaniu wszystkich danych}
+		W takim wypadku za odpowiednią liczbę tematów przyjęto medianę liczby tematów dla wszystkich testowanych modeli,
+			która wyniosła 295.\todo{Poprawić po dodaniu wszystkich danych}
 
 		W celu określenia wyniku każdego modelu wykorzystano zmodyfikowaną standaryzację Z.
 		Standaryzacja Z obliczana jest zgodnie z następującym wzorem:
@@ -120,4 +151,66 @@ return score
 		Aby wyrazić te odległości w skali (0, 1), gdzie 1 to najlepszy wynik, znormalizowano dane
 			poprzez odwrócenie wartości bezwzględnej standaryzacji Z powiększonej o 1 (aby minimalna wartość była równa 1):
 		\[s_T=\frac{1}{|\tilde{z}|+1}\]
+		Implementacja tej miary przedstawiona została na listingu~\ref{lst:final_score} jako funkcja \verb|modified_zscore|.
 		\todo{rys}
+
+	\subsection{Implementacja}
+		Algorytmy zaimplementowane zostały w języku Python.
+		Wykorzystane zostały biblioteki \verb|numpy|, \verb|pandas|, \verb|scikit-learn| oraz \verb|scipy|.
+
+	\begin{lstlisting}[label=lst:score_consistency,language=Python,caption=Funkcja obliczająca spójność s\_c]
+def score_consistency(df: pd.DataFrame) -> float:
+	same_per_day = []
+	different_per_day = []
+
+	for _, day in df.sort_values('speech_order').groupby(by='date'):
+		if len(day) < 2:
+			continue
+
+		same = 0
+		different = 0
+		for i in range(len(day) - 1):
+			if day.iloc[i].topic == -1:
+				continue
+
+			if day.iloc[i].topic == day.iloc[i + 1].topic:
+				same += 1
+			else:
+				different += 1
+
+		topics = len(day.topic.unique())
+		different -= (topics - 1)
+
+		same_per_day.append(same)
+		different_per_day.append(different)
+
+	s_c = np.sum(same_per_day) / np.sum([*same_per_day, *different_per_day])
+
+	return s_c
+		\end{lstlisting}
+
+		\begin{lstlisting}[label=lst:final_score,language=Python,caption=Obliczanie finalnej oceny spójności tematów dla listy modeli]
+from sklearn.preprocessing import MinMaxScaler
+from scipy import stats
+import numpy as np
+
+def modified_zscore(x: List[float]) -> List[float]:
+	median = np.median(x)
+	deviation_from_med = x - median
+
+	mad = np.median(np.abs(deviation_from_med))
+
+	consistency_correction = 1.4826
+	mod_zscore = deviation_from_med / (consistency_correction * mad)
+
+	return mod_zscore
+
+scores['s_f'] = [(total - x) / total for x in scores['not_found']]
+
+scores['s_T'] = 1 / (np.abs(modified_zscore(scores['topic_count'])) + 1)
+
+scaler = MinMaxScaler()
+minimax = scaler.fit_transform(scores[['s_c','u_mass','s_f','s_T']])
+
+scores['avg'] = np.nanmean(minimax, axis=1)
+		\end{lstlisting}
