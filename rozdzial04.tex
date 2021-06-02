@@ -78,9 +78,19 @@
 			\includegraphics[width=\linewidth]{rys04/umap_100_100_100.png}
 			n\_neighbors = 100
 		\end{minipage}
-		\caption{Dwuwymiarowa reprezentacja danych przez UMAP w zależności od wartości parametru n\_neighbors}\label{fig:umap} % chktex 9 chktex 10
+		\caption{Dwuwymiarowa reprezentacja danych przez UMAP w zależności od wartości parametru n\_neighbors}\label{fig:umap}
 	\end{figure}
 	
 
 \section{Grupowanie}
-
+	HDBSCAN to algorytm klastrowania hierarchicznego bazujący na DBSCAN (ang.\ \emph{Density-based spatial clustering of applications with noise}).
+	
+	Jego działanie można opisać w pięciu krokach:
+	\begin{enumerate}
+		\item przekształcenie przestrzeni według gęstości punktów,
+		\item osadzenie minimalnego drzewa rozpinającego graf odległości,
+		\item skonstruowanie hierarchii klastrów,
+		\item skondensowanie hierarchii klastrów zgodnie z minimalnym rozmiarem klastra,
+		\item wydobycie stabilnych klastrów ze skondensowanego drzewa.
+	\end{enumerate}
+	

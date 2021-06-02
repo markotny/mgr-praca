@@ -163,6 +163,7 @@
         },
         "cSpell.words": [
 					"CBOW",
+					"DBSCAN",
 					"HDBSCAN",
 					"Hellingera",
 					"NKJP",
@@ -170,6 +171,7 @@
 					"SBERT",
 					"SNLI",
 					"UMAP",
+					"klastrowania",
 					"konwolucyjna",
 					"konwolucyjne",
 					"konwolucyjnymi",
