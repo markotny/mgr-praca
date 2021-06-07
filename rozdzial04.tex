@@ -84,13 +84,33 @@
 
 \section{Grupowanie}
 	HDBSCAN to algorytm klastrowania hierarchicznego bazujący na DBSCAN (ang.\ \emph{Density-based spatial clustering of applications with noise}).
+	W celu zobrazowania działania algorytmu, wybrano ograniczony podzbiór danych.
+	Z klastrów wykrytych na wszystkich danych wylosowano pięć, a z każdego z nich wylosowano dziesięć wektorów.
+	Dodatkowo, wybrano dziesięć losowych wektorów bez przypisanego klastra.
+	Wybrano w ten sposób 60 dokumentów, które poddano ponownej analizie HDBSCAN
+		(wykorzystując wektory uzyskane z redukcji wymiarów wszystkich dokumentów do 5).
 	
-	Jego działanie można opisać w pięciu krokach:
-	\begin{enumerate}
-		\item przekształcenie przestrzeni według gęstości punktów,
-		\item osadzenie minimalnego drzewa rozpinającego graf odległości,
-		\item skonstruowanie hierarchii klastrów,
-		\item skondensowanie hierarchii klastrów zgodnie z minimalnym rozmiarem klastra,
-		\item wydobycie stabilnych klastrów ze skondensowanego drzewa.
-	\end{enumerate}
+	W pierwszym kroku liczone są odległości między punktami.
 	
+	\begin{figure}[htb]
+		\centering
+		\includegraphics[width=0.5\linewidth]{rys04/hdbscan_mst.png}
+		\caption{Minimalne drzewo rozpinające}\label{fig:mst}
+	\end{figure}
+	
+	\begin{figure}[htb]
+		\centering
+		\begin{minipage}{.5\textwidth}
+			a)\par\medskip % chktex 10
+			\begin{flushleft}
+				\includegraphics[width=.95\linewidth]{rys04/hdbscan_slt.png}
+			\end{flushleft}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			b)\par\medskip % chktex 10
+			\begin{flushright}
+				\includegraphics[width=.95\linewidth]{rys04/hdbscan_ct.png}
+			\end{flushright}
+		\end{minipage}
+		\caption{Dendrogramy hierarchii klastrów: a) na podstawie MST, b) skondensowane}\label{fig:dendrogram} % chktex 9 chktex 10
+	\end{figure}
