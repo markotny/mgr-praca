@@ -1,4 +1,5 @@
 % !TeX root = ./Dyplom.tex
+% chktex-file 21
 
 \chapter{Analiza tematyczna}
 	Analiza tematyczna (ang.\ \emph{topic modeling}) służy do organizowania, wyjaśniania, analizy w czasie, przeszukiwania i streszczania dużych zbiorów danych.
@@ -87,16 +88,45 @@
 	W celu zobrazowania działania algorytmu, wybrano ograniczony podzbiór danych.
 	Z klastrów wykrytych na wszystkich danych wylosowano pięć, a z każdego z nich wylosowano dziesięć wektorów.
 	Dodatkowo, wybrano dziesięć losowych wektorów bez przypisanego klastra.
-	Wybrano w ten sposób 60 dokumentów, które poddano ponownej analizie HDBSCAN
+	W ten sposób otrzymano 60 dokumentów, które poddano ponownej analizie HDBSCAN
 		(wykorzystując wektory uzyskane z redukcji wymiarów wszystkich dokumentów do 5).
 	
-	W pierwszym kroku liczone są odległości między punktami.
+	Algorytm określa klastry jako rejony o większej gęstości otoczone rzadziej rozmieszczonymi punktami.
+	Aby określenia gęstości używana jest metryka odległości do najbliższego \emph{k}-tego sąsiada oznaczona dalej jako \(core_k(x)\).
+	Na jej podstawie stworzono metrykę określającą odległość wzajemnej osiągalności (ang.\ \emph{mutual reachability distance}):
+	\[ d_k(a,b) = \max \left\lbrace core_k(a),core_k(b),d(a,b) \right\rbrace \]
+	gdzie:
+	\begin{itemize}
+		\item \(core_k(x)\) odległość do najbliższego \emph{k}-tego sąsiada,
+		\item \(d(a,b)\) pierwotna metryka odległości.
+	\end{itemize}
+	Dzięki takiej metryce punkty które są blisko siebie pozostają w pierwotnych odległościach, natomiast rzadsze punkty są od siebie odpychane.
+
+	Na podstawie obliczonych odległości konstruowane jest minimalne drzewo rozpinające algorytmem Prima.
+	Wierzchołkami grafu są punkty danych, a wagami krawędzi obliczone odległości.
+	Na rys.~\ref{fig:mst} przedstawiono powstałe drzewo dla wyselekcjonowanych danych.
+	Grubość krawędzi i kolor zależy od wartości odległości, gdzie grubsze linie oznaczają mniejszą odległość.
+	Punkty pokolorowane są zgodnie z pierwotnymi klastrami, a na czarno zaznaczone są punkty, które nie miały klastrów.
+	Zgodnie z oczekiwaniami, punkty nieprzypisane pierwotnie do żadnego klastra mają znacznie większe odległości od punktów, które tworzą zbiory.
+	Widać też, że klastry nie nachodzą na siebie, a więc dane są dobrze odseparowane.
 	
 	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=0.5\linewidth]{rys04/hdbscan_mst.png}
 		\caption{Minimalne drzewo rozpinające}\label{fig:mst}
 	\end{figure}
+	
+	Następnie powstałe krawędzie łączone są w hierarchiczne grupy, poprzez scalanie kolejnych krawędzi o najmniejszej odległości.
+	Powstałą w ten sposób hierarchię klastrów można zobrazować jako dendrogram (rys.~\ref{fig:dendrogram}a).
+	Celem algorytmu jest jednak otrzymanie zbioru klastrów, nie hierarchii.
+	W tym celu HDBSCAN kondensuje hierarchię do mniejszego drzewa.
+	Algorytm analizuje hierarchię i podczas każdego podziału sprawdza powstałe dwie grupy.
+	Jeśli obie grupy mają rozmiar większy niż minimalny (minimalny rozmiar klastra to parametr algorytmu),
+		to taki podział jest traktowany jako faktyczne dwie grupy.
+	Jeśli jednak któraś z powstałych grup ma mniejszy rozmiar niż minimalny to uznaje się,
+		że są to punkty wypadające z klastra niestanowiące osobnej grupy i zostawiana jest jedynie większa grupa.
+	W ten sposób otrzymuje się dużo mniej grup, które wraz ze wzrostem odległości między punktami zmniejszają swój rozmiar.
+	Wynik takiego działania przedstawiony jest na rysunku~\ref{fig:dendrogram}b.
 	
 	\begin{figure}[htb]
 		\centering
@@ -112,5 +142,25 @@
 				\includegraphics[width=.95\linewidth]{rys04/hdbscan_ct.png}
 			\end{flushright}
 		\end{minipage}
-		\caption{Dendrogramy hierarchii klastrów: a) na podstawie MST, b) skondensowane}\label{fig:dendrogram} % chktex 9 chktex 10
+		\caption{Dendrogramy hierarchii klastrów: a) na podstawie drzewa rozpinającego, b) skondensowane}\label{fig:dendrogram} % chktex 9 chktex 10
 	\end{figure}
+
+	Na końcu z powstałego skondensowanego drzewa wybierane są najstabilniejsze klastry.
+	Stabilność klastra określona na podstawie wartości \(\lambda=\frac{1}{distance}\).
+	Dla każdego klastra możemy oznaczyć \(\lambda_{birth}\) i \(\lambda_{death}\) jako wartości \(\lambda\)
+		odpowiednio w momencie powstania klastra i rozbicia na mniejsze klastry.
+	Dla każdego punktu \(p\) w klastrze, możemy zdefiniować \(\lambda_p\)
+		jako wartość \(\lambda\) w momencie, w którym punkt odłączył się od klastra, gdzie \(\lambda_{birth} < \lambda_p < \lambda_{death}\).
+	Następnie dla klastra obliczamy jego stabilność jako:
+	\[ \sum_{p\in cluster}\left(\lambda_p - \lambda_{birth}\right) \]
+
+	Aby wybrać końcowe klastry najpierw zaznaczane są wszystkie liście drzewa.
+	Jeśli suma stabilności dwóch łączących się klastrów jest większa niż stabilność powstałego klastra, 
+		to ustawiamy stabilność klastra na tą sumę.
+	Natomiast jeśli stabilność złączonego klastra jest większa niż jego potomków, to wybieramy ten klaster i odznaczamy wszystkich potomków.
+	W ten sposób zaznaczamy kolejne klastry aż dojdziemy do korzenia drzewa, a powstałe zaznaczenie to zbiór klastrów.
+	Na rysunku~\ref{fig:dendrogram}b zaznaczonych zostałoby pięć klastrów w kolorze morskim.
+	Pozostałe punkty nienależące do tych klastrów uznawane są za szum i nie mają przypisanych grup.
+
+\section{Reprezentacja tematu}
+	
