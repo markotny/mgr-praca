@@ -171,6 +171,8 @@
 					"SBERT",
 					"SNLI",
 					"UMAP",
+					"ciowymiarowej",
+					"ciowymiarowych",
 					"klastrowania",
 					"konwolucyjna",
 					"konwolucyjne",
@@ -186,12 +188,16 @@
 					"morfosyntaktyczne",
 					"nieustrukturyzowanych",
 					"niskowymiarowej",
+					"pi",
+					"pięciowymiarowej",
+					"pięciowymiarowych",
 					"riemannowskiej",
 					"tfidf",
 					"tokenizacji",
 					"ustandaryzowane",
 					"uwsp",
 					"uwspólniono",
-					"wysokowymiarowych"
+					"wysokowymiarowych",
+					"zwizualizowane"
 				]
 }

@@ -162,5 +162,28 @@
 	Na rysunku~\ref{fig:dendrogram}b zaznaczonych zostałoby pięć klastrów w kolorze morskim.
 	Pozostałe punkty nienależące do tych klastrów uznawane są za szum i nie mają przypisanych grup.
 
-\section{Reprezentacja tematu}
+	Parametr \emph{k} w implementacji algorytmu HDBSCAN nazwany jest \verb|min_samples| 
+		i domyślnie jego wartość jest równa wartości \verb|min_cluster_size|.
+	Na rysunku~\ref{fig:umap} wartość ta była równa 100.
+	Zmniejszenie wartości \verb|min_samples| do 1 skutkuje wykryciem większej ilości mniejszych grup.
+	Rezultat przedstawiony został na rys.~\ref{fig:hdbscan}a.
+
+	Rys~\ref{fig:hdbscan}b przedstawia klastry wykryte na pięciowymiarowych wektorach, a następnie zwizualizowane na dwóch.
+	Wykrywanie klastrów w przestrzeni pięciowymiarowej pozwala na dokładniejsze wykrycie zależności między punktami danych,
+		które mogą zostać utracone przy redukcji do zbyt małej liczby wymiarów.
+	W szczególności, punkty oznaczone jako szum w pięciu wymiarach, w dwóch wymiarach wykrywane są jako klastry.
 	
+	\begin{figure}[htb]
+		\centering
+		\begin{minipage}{.5\textwidth}
+			a)\par\medskip % chktex 10
+			\includegraphics[width=\linewidth]{rys04/umap_15_100_1.png}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			b)\par\medskip % chktex 10
+			\includegraphics[width=\linewidth]{rys04/umap_15_100_1_5d.png}
+		\end{minipage}
+		\caption{Wykryte klastry na wektorach: a) dwuwymiarowych, b) pięciowymiarowych}\label{fig:hdbscan} % chktex 9 chktex 10
+	\end{figure}
+
+\section{Reprezentacja tematu}
