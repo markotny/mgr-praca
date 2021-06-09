@@ -8,17 +8,20 @@
 	Dokonuje dyskretyzacji ciągłej przestrzeni tematów na z góry określoną liczbę \emph{t} tematów
 		i modeluje dokumenty jako kombinację tematów, dla każdego określając prawdopodobieństwo.
 	Każdy temat jest rozkładem prawdopodobieństwa słów.
-	Często największe prawdopodobieństwo wystąpienia mają powszechne słowa nie niosące istotnej informacji, np.\ zaimki czy łączniki.
-	Wymagana jest lista nieinformatywnych słów (ang.\ \emph{stop words}), które są odfiltrowywane z dokumentów.
+	Wiąże się to z pewnymi problemami, mianowicie często największe prawdopodobieństwo wystąpienia mają powszechne słowa nie niosące istotnej informacji, np.\ zaimki czy łączniki.
+	Problem ten jest częściowo rozwiązywany listą nieinformatywnych słów (ang.\ \emph{stop words}), które są odfiltrowywane z dokumentów.
 	Często lista ta musi być dopasowana do danego zbioru tekstów.
 	Dokumenty reprezentowane są jako zbiór słów, w którym zliczane jest wystąpienie każdego słowa --- BOW (ang.\ \emph{bag-of-words}).
-	Taki format nie zachowuje informacji o kolejności słów, ani ich semantyce.
+	Wadą takiego formatu jest fakt, że nie zachowuje informacji o kolejności słów, ani ich semantyce.
+
 	Celem LDA jest znalezienie takich tematów, które mogą posłużyć do odtworzenia oryginalnych rozkładów słów z dokumentów z minimalnym błędem.
 	Model nie rozróżnia pomiędzy słowami informatywnymi, a nieinformatywnymi, ma za zadanie jedynie jak najlepiej odzwierciedlać oryginalne dokumenty.
 	Z tego powodu najbardziej prawdopodobne słowa w temacie niekoniecznie odzwierciedlają faktyczne tematy dokumentów.
-	\todo{LDA dla pl\cite{BoW_PL}}
+	Na podstawie analizy LDA otrzymujemy nie tylko klasyfikację dokumentu do tematu, lecz cały wektor prawdopodobieństw przynależności dokumentu do każdego z tematów.
+	Wektor ten ma więc rozmiar równy liczbie wszystkich tematów.
+	Jak pokazano w~\cite{BoW_PL}, nadzorowane metody klasyfikacji wykorzystujące te wektory dają podobne wyniki do metod opartych o \emph{word-to-vec}.
 
-	Modele oparte o transformery osiągają najlepsze wyniki w wielu zagadnieniach z dziedziny NLP,
+	Modele oparte o transformery osiągają najlepsze wyniki w wielu zagadnieniach z dziedziny NLP\cite{KLEJ},
 		więc powstały również bazujące na nich metody analizy tematycznej.
 	Jedną z nich jest BERTopic\cite{BERTopic}, algorytm generujący tematy na podstawie wektorów BERT\@.
 	Wykorzystuje UMAP\cite{UMAP} w celu redukcji wymiarowości wektorów do 5 wymiarów.

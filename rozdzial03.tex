@@ -10,10 +10,15 @@
 	Architektura takich modeli opiera się na sieciach neuronowych próbujących przewidzieć słowo w zależności od kontekstu
 		(modele CBOW --- ang. \emph{Continuous bag-of-words}) lub kontekst w zależności od słowa (ang.\ \emph{skip-gram})\cite{word2vec}, gdzie kontekst to otaczające słowa.
 	Wadą tych modeli jest fakt, że są one niekontekstowe.
-	\todo{odnieść się do\cite{BoW_PL}}
 	Oznacza to, że po nauczeniu modelu, gdy chcemy go wykorzystać do obliczenia wektora danego słowa, to otrzymany wektor nie bierze pod uwagę kontekstu, w jakim występuje to słowo.
 	Przykładowo słowo ,,zamek'' będzie reprezentowane przez taki sam wektor niezależnie od tego,
 		czy w danym zdaniu odnosi się do zabezpieczenia antywłamaniowego, czy też widowiskowej dolnośląskiej budowli obronnej.
+
+	Nie oznacza to jednak, że modele bazujące na \emph{bag-of-words} i \emph{word-to-vec} dają złe wyniki.
+	Wręcz przeciwnie, jak pokazano w~\cite{BoW_PL} modele te nie tylko dają dobre rezultaty,
+		ale wraz ze wzrostem liczby dokumentów dodatkowe wstępne przetwarzanie (lematyzacja) przestają poprawiać dokładność.
+	Należy jednak mieć na uwadze, iż w tej pracy uzyskane wektory posłużyły do nadzorowanego wytrenowania klasyfikatora opartego o wielowarstwowy perceptron.
+	Nie jest jasne, czy podczas nienadzorowanego wykrywania tematów wektory te spiszą się równie dobrze.
 	
 	W 2018 r ukazała się praca prezentująca BERT (ang.\ \emph{Bidirectional Encoder Representations from Transformers})\cite{BERT}.
 	Był to pierwszy model kontekstowy.
