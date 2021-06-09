@@ -22,14 +22,12 @@
 	Jeśli para słów często występuje razem w dokumentach, to są one powiązane.
 	Można więc określić spójność całej reprezentacji tematu badając wszystkie w niej zawarte pary słów.
 	Miara ta porównana została z wynikami zadania podmiany słowa i uzyskała ona lepszą korelację z ocenami ludzi.
-	\todo{Wykresiki}
 
 	Autorzy~\cite{C_NPMI} proponują rozwiązanie bazujące na wektorach kontekstowych słów tematu (zwane dalej \(C_{NPMI}\)).
 	Wektory te są obliczane na podstawie współwystępujących słów w kontekście analizowanego słowa.
 	Kontekst jest definiowany jako tzw.\ przesuwne okno (ang.\ \emph{sliding window}) zwierające \(\pm 5\) otaczających słów.
 	Następnie wektory są ważone algorytmem NPMI (ang.\ \emph{Normalized Point Mutual Information}).
 	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami wektorów kontekstowych słów tematu.
-	\todo{też jakieś wykresiki}
 
 	W pracy~\cite{Eval_Topics} autorzy stworzyli bazową strukturę pozwalającą na zdefiniowanie metryk \(C_{UMass}\), \(C_{NPMI}\)
 		oraz innych miar spójności w jednej przestrzeni.
@@ -105,7 +103,7 @@ return score
 	Skalowanie odbywa się przy pomocy klasy \verb|MinMaxScaler| z biblioteki \verb|scikit-learn|,
 		jak przedstawiono w linijce 18 listingu~\ref{lst:final_score}.
 
-	\subsection{Ocena liczby przyporządkowanych dokumentów}
+	\subsection{Ocena liczby przyporządkowanych dokumentów}\label{sec:score_not_found}
 		Miara oceniająca liczbę przyporządkowanych dokumentów korzysta bezpośrednio z wyniku grupowania.
 		Grupa oznaczona jako '-1' oznacza dokumenty, które nie zostały zgrupowane, a więc nie mają przypisanego tematu.
 		Rozmiar tej grupy odejmowany jest od rozmiaru korpusu uzyskując liczbę dokumentów z rozpoznanymi tematami.
@@ -214,3 +212,22 @@ minimax = scaler.fit_transform(scores[['s_c','u_mass','s_f','s_T']])
 
 scores['avg'] = np.nanmean(minimax, axis=1)
 		\end{lstlisting}
+
+\section{Porównanie z LDA}
+	Tematy uzyskane metodą BERTopic zostały porównane z popularną metodą analizy tematycznej --- LDA\@.
+	W tym celu wykonano pomiary spójności algorytmami opisanymi w poprzednich rozdziałach.
+	Jedną z zasadniczych wad algorytmu LDA jest fakt, iż liczba tematów jest jego parametrem.
+	Aby znaleźć optymalną liczbę tematów, przeprowadzono pomiary dla różnych wartości parametru.
+	Ze względu na ograniczenia techniczne związane z pamięcią operacyjną maszyny (128GB), analizie poddano sto tysięcy losowo wybranych dokumentów,
+		co stanowi ok.~34\% całości korpusu.
+	Wyniki tych pomiarów przedstawione są na rysunku~\ref{fig:lda_scores}.
+
+	\begin{figure}[htb]
+		\centering
+		\missingfigure{pomiary c dla lda}
+		\caption{Wyniki pomiarów C\_UMass i C\_NPMI dla LDA}\label{fig:lda_scores}
+	\end{figure}
+
+	Dla najlepszej znalezionej liczby tematów zmierzono również spójność \emph{s\_c}, która wyniosła \todo{wiela?}.
+	Algorytm LDA nie przewiduje szumu w korpusie, każdy dokument posiada przypisany temat.
+	Miara opisana w rozdziale~\ref{sec:score_not_found} nie ma więc zastosowania dla LDA\@.

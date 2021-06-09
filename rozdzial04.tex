@@ -228,6 +228,10 @@
 	W ten sposób otrzymuje się reprezentacje tematów dużo lepiej opisujące zbiory,
 		co jest szczególnie istotne w języku polskim zawierającym wiele odmian tych samych słów.
 	Tabela~\ref{tab:mmr} przedstawia reprezentacje tematów otrzymane po zastosowaniu MMR\@.
+	Widoczna jest znaczna poprawa, jednak nadal występują równoznaczne słowa (np. ,,statków'' i ,,statkach'' w temacie \emph{A}, czy ,,celnego'' i ,,celnych'' w temacie \emph{C}).
+	% Możliwe jest dalsze działanie w celu poprawy reprezentacji poprzez lematyzację, jednak wykorzystywany algorytm lematyzujący bazuje na bibliotece \emph{SpaCy},
+	% 	która wykorzystuje model TensorFlow do analizy zdania w celu wykrycia części zdania, a dopiero następnie wyboru odpowiedniej bazowej formy słowa.
+	% Takie przetwarzanie jest zbyt czasochłonne, aby wykonywać je dla każdego przypadku testowego
 
 	\begin{table}[htb]
 		\caption{Reprezentacje wybranych tematów: a) bez MMR, b) z MMR}\label{tab:mmr} % chktex 9 chktex 10
