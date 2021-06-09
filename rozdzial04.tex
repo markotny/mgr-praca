@@ -203,7 +203,8 @@
 
 	W ten sposób uzyskano ranking wszystkich słów w danej klasie.
 	Na podstawie tego rankingu wybiera się 5--10 słów z najwyższym wynikiem, które stanowią reprezentację tematu.
-	Często zdarza się jednak, że otrzymane słowa będą bardzo podobne \todo{pokazać przykładową reprezentację na tym etapie}.
+	Często zdarza się jednak, że otrzymane słowa będą bardzo podobne.
+	Przykładowe reprezentacje powstałe tą metodą przedstawione zostały w tabeli~\ref{tab:mmr}.
 	Aby zminimalizować liczbę podobnych słów w reprezentacji tematu i jednocześnie zdywersyfikować opis tematu,
 		w BERTopic zastosowany jest algorytm MMR (ang.\ \emph{Maximal Marginal Relevance})\cite{MMR}:
 	\[MMR = \arg \max_{D_i \in R\backslash S} \left[\lambda\left(Sim_1(D_1, Q) - (1-\lambda) \max_{D_j \in S} Sim_2(D_i, D_j)\right)\right]\]
@@ -217,9 +218,28 @@
 		\item \(Sim_1\) metryka podobieństwa kandydata do zapytania,
 		\item \(Sim_2\) metryka podobieństwa kandydatów między sobą.
 	\end{itemize}
-	W kontekście poszukiwania najlepszej reprezentacji tematu kandydatami są słowa z najwyższymi wynikami \emph{c-TF-IDF}, a zapytanie to wektor całego tematu.
+	W kontekście poszukiwania najlepszej reprezentacji tematu, kandydatami są słowa z najwyższymi wynikami \emph{c-TF-IDF}, a zapytanie to wektor całego tematu.
 	Wektor tematu obliczany jest wybranym modelem SBERT kodującym dokument powstały z połączenia trzydziestu słów tematu o najwyższych wynikach \emph{c-TF-IDF}.
 	Natomiast jako obie metryki \(Sim_1\) i \(Sim_2\) wykorzystywane jest podobieństwo kosinusowe.
 	Wartość parametru \(\lambda\) ustawiono na 0 (maksymalna dywersyfikacja).
 	W ten sposób otrzymuje się reprezentacje tematów dużo lepiej opisujące zbiory,
-		co jest szczególnie istotne w języku polskim zawierającym wiele odmian tych samych słów.\todo{pokazać jakąś reprezentacje po mmr}
+		co jest szczególnie istotne w języku polskim zawierającym wiele odmian tych samych słów.
+	Tabela~\ref{tab:mmr} przedstawia reprezentacje tematów otrzymane po zastosowaniu MMR\@.
+
+	\begin{table}[htb]
+		\caption{Reprezentacje wybranych tematów: a) bez MMR, b) z MMR}\label{tab:mmr} % chktex 9 chktex 10
+		a) % chktex 10
+
+		\begin{tabularx}{\textwidth}{rl}
+			A	&	morskich | statków | morskiego | statku | morskiej	\\ 
+			B	&	lotnicze | lotnictwa | lotniczego | lotnisk | lotniczych	\\ 
+			C	&	celnego | celnych | towarów | celne | celny	\\
+		\end{tabularx}
+		b) % chktex 10
+
+		\begin{tabularx}{\textwidth}{rl}
+			A	&	statków | statkach | marynarzy | gospodarki morskiej | administracji morskiej	\\ 
+			B	&	lotnicze | lotnictwa | lotnictwa cywilnego | prawo lotnicze | ruchu lotniczego \\ 
+			C	&	celnego | celnych | prawo celne | kodeks celny | prawa celnego \\
+		\end{tabularx}
+	\end{table}
