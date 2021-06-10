@@ -1,7 +1,7 @@
 % !TeX root = ./Dyplom.tex
 % chktex-file 21
 
-\chapter{Analiza tematyczna}
+\chapter{Analiza tematyczna}\label{sec:topic_modeling}
 	Analiza tematyczna (ang.\ \emph{topic modeling}) służy do organizowania, wyjaśniania, analizy w czasie, przeszukiwania i streszczania dużych zbiorów danych.
 	Najpopularniejszą metodą modelowania tematów jest LDA (ang.\ \emph{Latent Dirichlet Allocation})\cite{LDA}.
 	Jest to generatywny model probabilistyczny.
@@ -228,25 +228,24 @@
 	W ten sposób otrzymuje się reprezentacje tematów dużo lepiej opisujące zbiory,
 		co jest szczególnie istotne w języku polskim zawierającym wiele odmian tych samych słów.
 	Tabela~\ref{tab:mmr} przedstawia reprezentacje tematów otrzymane po zastosowaniu MMR\@.
-	Widoczna jest znaczna poprawa, jednak nadal występują równoznaczne słowa (np. ,,statków'' i ,,statkach'' w temacie \emph{A}, czy ,,celnego'' i ,,celnych'' w temacie \emph{C}).
-	% Możliwe jest dalsze działanie w celu poprawy reprezentacji poprzez lematyzację, jednak wykorzystywany algorytm lematyzujący bazuje na bibliotece \emph{SpaCy},
-	% 	która wykorzystuje model TensorFlow do analizy zdania w celu wykrycia części zdania, a dopiero następnie wyboru odpowiedniej bazowej formy słowa.
-	% Takie przetwarzanie jest zbyt czasochłonne, aby wykonywać je dla każdego przypadku testowego
 
 	\begin{table}[htb]
 		\caption{Reprezentacje wybranych tematów: a) bez MMR, b) z MMR}\label{tab:mmr} % chktex 9 chktex 10
+		\centering
 		a) % chktex 10
-
-		\begin{tabularx}{\textwidth}{rl}
+		\begin{tabularx}{.9\textwidth}{rl}
+			\toprule
 			A	&	morskich | statków | morskiego | statku | morskiej	\\ 
 			B	&	lotnicze | lotnictwa | lotniczego | lotnisk | lotniczych	\\ 
 			C	&	celnego | celnych | towarów | celne | celny	\\
+			\midrule
 		\end{tabularx}
-		b) % chktex 10
 
-		\begin{tabularx}{\textwidth}{rl}
+		b) % chktex 10
+		\begin{tabularx}{.9\textwidth}{rl}
 			A	&	statków | statkach | marynarzy | gospodarki morskiej | administracji morskiej	\\ 
 			B	&	lotnicze | lotnictwa | lotnictwa cywilnego | prawo lotnicze | ruchu lotniczego \\ 
 			C	&	celnego | celnych | prawo celne | kodeks celny | prawa celnego \\
+			\bottomrule
 		\end{tabularx}
 	\end{table}

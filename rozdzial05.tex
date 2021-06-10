@@ -119,8 +119,7 @@ return score
 		Z tego powodu uznano, że zbyt ogólne tematy nie są odpowiednie w tym kontekście.
 		Nadmiernie szczegółowe, a więc o małej liczebności tematy również tracą informacje o zależnościach między dokumentami,
 			więc także uznane zostały za niepożądane.
-		W takim wypadku za odpowiednią liczbę tematów przyjęto medianę liczby tematów dla wszystkich testowanych modeli,
-			która wyniosła 295.\todo{Poprawić po dodaniu wszystkich danych}
+		W takim wypadku za odpowiednią liczbę tematów przyjęto medianę liczby tematów dla wszystkich testowanych modeli, która wyniosła 219.
 
 		W celu określenia wyniku każdego modelu wykorzystano zmodyfikowaną standaryzację Z.
 		Standaryzacja Z obliczana jest zgodnie z następującym wzorem:
@@ -217,17 +216,84 @@ scores['avg'] = np.nanmean(minimax, axis=1)
 	Tematy uzyskane metodą BERTopic zostały porównane z popularną metodą analizy tematycznej --- LDA\@.
 	W tym celu wykonano pomiary spójności algorytmami opisanymi w poprzednich rozdziałach.
 	Jedną z zasadniczych wad algorytmu LDA jest fakt, iż liczba tematów jest jego parametrem.
-	Aby znaleźć optymalną liczbę tematów, przeprowadzono pomiary dla różnych wartości parametru.
+	Aby znaleźć optymalną liczbę tematów, przeprowadzono pomiary dla różnych wartości parametru z zakresu [10--300].
+	Dokumenty przetworzono tą samą metodą, co w przypadku generowania wektorów TF-IDF w rozdziale~\ref{sec:tfidf_vectors},
+		mianowicie lematyzacja słownikami \emph{Morfeusz2}, usunięcie polskich słów bez znaczenia (ang.\ \emph{stop words}) oraz wygenerowanie bigramów.
 	Ze względu na ograniczenia techniczne związane z pamięcią operacyjną maszyny (128GB), analizie poddano sto tysięcy losowo wybranych dokumentów,
 		co stanowi ok.~34\% całości korpusu.
-	Wyniki tych pomiarów przedstawione są na rysunku~\ref{fig:lda_scores}.
+	Wyniki tych pomiarów przedstawione są na rysunku~\ref{fig:lda_scores} oraz w tabeli~\ref{tab:lda_scores}.
+	Z danych można odczytać, że dokładność modelu utrzymuje się na podobnym poziomie do ok.~80 tematów, potem zaczyna gwałtownie spadać.
+	Za optymalną liczbę tematów wybrano więc 80 ze względu na zróżnicowanie korpusu, który z pewnością zawiera dużo tematów.
 
 	\begin{figure}[htb]
 		\centering
-		\missingfigure{pomiary c dla lda}
-		\caption{Wyniki pomiarów C\_UMass i C\_NPMI dla LDA}\label{fig:lda_scores}
+		\begin{minipage}{.5\textwidth}
+			a)\par\medskip % chktex 10
+			\includegraphics[width=\linewidth]{rys05/lda_c_npmi.png}
+		\end{minipage}%
+		\begin{minipage}{.5\textwidth}
+			b)\par\medskip % chktex 10
+			\includegraphics[width=\linewidth]{rys05/lda_u_mass.png}
+		\end{minipage}
+		\caption{Wyniki pomiarów dla LDA:\ a) \(C_{NPMI}\), b) \(C_{UMass}\)}\label{fig:lda_scores} % chktex 9 chktex 10
 	\end{figure}
 
-	Dla najlepszej znalezionej liczby tematów zmierzono również spójność \emph{s\_c}, która wyniosła \todo{wiela?}.
-	Algorytm LDA nie przewiduje szumu w korpusie, każdy dokument posiada przypisany temat.
-	Miara opisana w rozdziale~\ref{sec:score_not_found} nie ma więc zastosowania dla LDA\@.
+	\begin{table}[htb]
+		\centering
+		\caption{Wyniki pomiarów dla LDA w zależności od liczby tematów}\label{tab:lda_scores}
+		\begin{tabular}{lrr}
+			\toprule
+			{} &    c\_npmi &    u\_mass \\
+			\midrule
+			10  &  0.071499 & -0.696868 \\
+			20  &  0.076610 & -0.694938 \\
+			30  &  0.071255 & -0.645520 \\
+			40  &  0.072496 & -0.730301 \\
+			50  &  0.068460 & -0.696550 \\
+			60  &  0.073730 & -0.692332 \\
+			70  &  0.073619 & -0.799463 \\
+			80  &  0.067665 & -0.813064 \\
+			90  &  0.049716 & -1.132477 \\
+			100 &  0.036761 & -1.366198 \\
+			150 &  0.011804 & -2.110305 \\
+			200 &  0.014556 & -2.170508 \\
+			250 & -0.037109 & -4.191849 \\
+			300 & -0.038166 & -4.027447 \\
+			\bottomrule
+			\end{tabular}			
+	\end{table}
+
+	Dla znalezionych tematów wygenerowano reprezentacje składające się z pięciu najwyżej ocenianych słów.
+	Losowo wybrane 5 tematów przedstawiono w tabeli~\ref{tab:lda_topics}a.
+	Dodatkowo, ze względu na to, iż mediana liczby znalezionych tematów algorytmem HDBSCAN wyniosła 219,
+		postanowiono zbadać również model LDA dla 200 tematów (tabela~\ref{tab:lda_topics}b).
+	Dla obu tych modeli widoczny jest problem opisany w rozdziale~\ref{sec:topic_modeling}.
+	Mianowicie, reprezentacje tematów zawierają wiele podobnych słów specyficznych dla całego korpusu, a nie tematu (,,ustawa'', ,,minister'', czy ,,poseł'').
+	Podjęto próby poszerzenia listy słów nieinformatywnych, jednak szybko okazało się, iż takich słów jest zbyt wiele
+		--- po usunięciu słów specyficznych dla korpusu nadal reprezentacje tematów składały się często ze słów typu ,,czas'', ,,kwestia'', ,,chodzi''.
+	Nie stwierdzono zauważalnej różnicy między dokładnością reprezentacji wygenerowanych dla 80 tematów, a tymi dla 200.
+	
+	\begin{table}[htb]
+		\caption{Reprezentacje pięciu losowo wybranych tematów dla LDA:\ a) 80 tematów, b) 200 tematów}\label{tab:lda_topics} % chktex 9 chktex 10
+		\centering
+		a) % chktex 10
+		\begin{tabularx}{.7\textwidth}{rl}
+			\toprule
+			A	&	rok | mieć | europejski | minister | r	\\ 
+			B	&	państwo | ustawa | mieć | rok | Polska	\\ 
+			C	&	minister | państwo | dziecko | rok | szkoła	\\
+			D	& minister | poseł | pytanie | mieć | chcieć	\\
+			E	& ustawa | mieć | poseł | wysoki | poprawka	\\
+			\midrule
+		\end{tabularx}
+
+		b) % chktex 10
+		\begin{tabularx}{.7\textwidth}{rl}
+			A	&	ustawa | projekt | ustawy | komisja | wysoki	\\ 
+			B	&	rok | mieć | minister | poseł | Maryja \\ 
+			C	&	ustawa | zmiana | projekt | prawo | ustawy \\
+			D	&	trybunał | konstytucyjny | ustawa | rok | Trybunału	\\
+			E	&	ustawa | mieć | rok | Pan | sprawa	\\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
