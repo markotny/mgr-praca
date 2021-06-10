@@ -1,4 +1,5 @@
 % !TeX root = ./Dyplom.tex
+% chktex-file 9
 % chktex-file 21
 
 \chapter{Ocena skuteczności modeli}
@@ -14,7 +15,7 @@
 	Jeśli tematy są spójne, to niepasujące słowo powinno być łatwe do zidentyfikowania,
 		natomiast w mniej spójnych tematach słowa będą sprawiały wrażenie bardziej losowych, co utrudni poprawne rozwiązanie problemu.
 
-\section{Ewaluacja spójności reprezentacji tematów}
+\section{Ewaluacja spójności reprezentacji tematów}\label{sec:coherence_scores}
 	Najpopularniejszą metodą ewaluacji wygenerowanych tematów jest analiza reprezentacji tematów (zbioru słów opisujących temat).
 	Im lepiej słowa opisujące temat reprezentują wszystkie dokumenty w danym temacie, tym lepszy model.
 	W pracy~\cite{U_MASS} autorzy proponują algorytm (zwany dalej \(C_{UMass}\))
@@ -34,7 +35,7 @@
 	W projekcie skorzystano z biblioteki \verb|Gensim|\footnote{\url{https://radimrehurek.com/gensim/models/coherencemodel.html} (dostęp dnia 29 maja 2021)},
 		która implementuje miary spójności na podstawie tych definicji.
 
-\section{Ewaluacja spójności rozkładu tematów}
+\section{Ewaluacja spójności rozkładu tematów}\label{sec:consistency_scores}
 	Ze względu na specyfikę korpusu możliwe jest również sformułowanie metryki wykorzystującej porządek obrad sejmu.
 	Każde posiedzenie przebiega zgodnie z ustaloną strukturą, gdzie marszałek zarządza obrady na temat danej ustawy, poprawki czy interpelacji,
 		a następnie kolejni posłowie wyrażają swoją opinię na ten temat.
@@ -99,7 +100,7 @@ return score
 	Takie modele można odfiltrować definiując odpowiednie progi, jednak taka metoda wymusza ustanowienie założeń,
 		które niekoniecznie będą optymalne.
 	Zamiast tego, stworzone zostały dwie dodatkowe miary: jedna ocenia liczbę przyporządkowanych dokumentów \(s_f\), druga ocenia liczbę tematów \(s_T\).
-	Końcowa ocena modelu jest średnią ocen \(C_{UMass}\), \(s_c\), \(s_f\), \(s_T\)\todo{ustalić końcowy zestaw} przeskalowanych do pełnego zakresu (0, 1).
+	Końcowa ocena modelu jest średnią ocen \(C_{UMass}\), \(C_{NPMI}\), \(s_c\), \(s_f\) oraz \(s_T\) przeskalowanych do pełnego zakresu (0, 1).
 	Skalowanie odbywa się przy pomocy klasy \verb|MinMaxScaler| z biblioteki \verb|scikit-learn|,
 		jak przedstawiono w linijce 18 listingu~\ref{lst:final_score}.
 
@@ -110,7 +111,14 @@ return score
 		Liczba ta dzielona jest przez rozmiar korpusu, co daje miarę w przedziale (0, 1).
 		Działanie to przedstawione jest w linijce 16 listingu~\ref{lst:final_score},
 			gdzie \verb|scores['not_found']| to kolumna tabeli zawierająca rozmiar grupy nieprzyporządkowanych dokumentów dla każdego modelu.
-		\todo{jakiś rysunek czy coś}
+		
+		Przykładowy wynik działania tej metody przedstawiony został na rysunku~\ref{fig:not_found}.
+
+		\begin{figure}[htb]
+			\centering
+			\includegraphics[width=\linewidth]{rys05/not_found.png}
+			\caption{Liczba rozpoznanych dokumentów przed i po znormalizowaniu dla wybranych parametrów; format osi x: <n\_neighbors>: <min\_cluster\_size>, <min\_samples>}\label{fig:not_found}
+		\end{figure}
 
 	\subsection{Ocena liczby tematów}
 		Dużo trudniej jest ocenić liczbę tematów, gdyż zarówno osiemdziesiąt ogólnych tematów,
@@ -145,17 +153,24 @@ return score
 		Tak ustandaryzowane dane rozłożone są wokół zera, gdzie liczby tematów mniejsze od mediany mają ujemny wynik, a większe dodatni.
 		Takie odległości interpretowane są jako odległości od najlepszej liczby tematów,
 			im większa odległość tym gorszy powinien być wynik takiego modelu.
+		W celu dodatkowego ograniczenia wpływu pomiarów zwracających błędną liczbę tematów, medianę obliczono dla ograniczonego zakresu (50, 1000).
 		Aby wyrazić te odległości w skali (0, 1), gdzie 1 to najlepszy wynik, znormalizowano dane
 			poprzez odwrócenie wartości bezwzględnej standaryzacji Z powiększonej o 1 (aby minimalna wartość była równa 1):
 		\[s_T=\frac{1}{|\tilde{z}|+1}\]
 		Implementacja tej miary przedstawiona została na listingu~\ref{lst:final_score} jako funkcja \verb|modified_zscore|.
-		\todo{rys}
+		Wykres liczby tematów dla wybranego fragmentu parametrów przed i po znormalizowaniu przedstawiony został na rysunku~\ref{fig:topic_counts}.
+
+		\begin{figure}[htb]
+			\centering
+			\includegraphics[width=\linewidth]{rys05/topic_counts.png}
+			\caption{Liczba tematów przed i po znormalizowaniu dla wybranych parametrów; format osi x: <n\_neighbors>: <min\_cluster\_size>, <min\_samples>}\label{fig:topic_counts}
+		\end{figure}
 
 	\subsection{Implementacja}
 		Algorytmy zaimplementowane zostały w języku Python.
 		Wykorzystane zostały biblioteki \verb|numpy|, \verb|pandas|, \verb|scikit-learn| oraz \verb|scipy|.
 
-	\begin{lstlisting}[label=lst:score_consistency,language=Python,caption=Funkcja obliczająca spójność s\_c]
+		\begin{lstlisting}[label=lst:score_consistency,language=Python,caption=Funkcja obliczająca spójność s\_c]
 def score_consistency(df: pd.DataFrame) -> float:
 	same_per_day = []
 	different_per_day = []
@@ -192,7 +207,8 @@ from scipy import stats
 import numpy as np
 
 def modified_zscore(x: List[float]) -> List[float]:
-	median = np.median(x)
+	valid_x = [count for count in x if count > 50 and count < 1000]
+	median = np.median(valid_x)
 	deviation_from_med = x - median
 
 	mad = np.median(np.abs(deviation_from_med))
@@ -207,12 +223,149 @@ scores['s_f'] = [(total - x) / total for x in scores['not_found']]
 scores['s_T'] = 1 / (np.abs(modified_zscore(scores['topic_count'])) + 1)
 
 scaler = MinMaxScaler()
-minimax = scaler.fit_transform(scores[['s_c','u_mass','s_f','s_T']])
+s = scaler.fit_transform(scores[['u_mass','c_npmi','s_c','s_f','s_T']])
 
-scores['avg'] = np.nanmean(minimax, axis=1)
+scores['avg'] = np.nanmean(s, axis=1)
 		\end{lstlisting}
 
-\section{Porównanie z LDA}
+\section{Przeprowadzenie pomiarów}
+	Pomiary metodami opisanymi w poprzednim rozdziale zaplanowano tak, by wyniki umożliwiły jak najszerszą analizę porównawczą.
+	Wektory zdań generowano następującymi metodami opisanymi w rozdziale~\ref{sec:vectors}:
+	\begin{itemize}
+		\item Sentence-Transformers,
+		\item Universal Sentence Encoder,
+		\item TF-IDF\@.
+	\end{itemize}
+	Dodatkowo, dla pierwszych dwóch metod wykonano pomiary dla następujących sposobów łączenia wektorów zdań w wektory wypowiedzi (rozdział~\ref{sec:sentences}):
+	\begin{itemize}
+		\item LexRank (top1, top5, średnia ważona),
+		\item TF-IDF (top1, top5, średnia ważona),
+		\item średnia arytmetyczna,
+	\end{itemize}
+	oraz bez podziału na zdania (generowanie wektora bezpośrednio dla całej wypowiedzi).
+	Dla wektorów tf-idf przygotowano dwa warianty: jeden analizujący nieprzetworzone dokumenty
+		oraz drugi wykorzystujący dane przetworzone w sposób opisany w rozdziale~\ref{sec:tfidf_vectors}.
+
+	Redukcję wektorów wykonywano do pięciu wymiarów metryką kosinusową dla wektorów \emph{SBERT} i \emph{USE} oraz metryką Hellingera dla wektorów \emph{TF-IDF}.
+	Zmieniano jedynie parametr \verb|n_neighbors| testując następujące wartości: 5, 10, 15, 20, 25 oraz 50, gdzie najmniejsze wartości skupiają się na lokalnych zależnościach,
+		a większe wykrywają globalne struktury.
+	Podczas klastrowania algorytmem HDBSCAN testowane były parametry \verb|min_cluster_size| oraz \verb|min_samples| w kombinacjach przedstawionych w tabeli~\ref{tab:hdbscan_params}.
+
+	\begin{table}[htb]
+		\caption{Testowane parametry algorytmu HDBSCAN}\label{tab:hdbscan_params}
+		\centering
+		\begin{tabular}{lrrrrrrrrrrrrrr}
+			\toprule
+			min\_cluster\_size	& 10 & \multicolumn{2}{l}{20} &  \multicolumn{3}{l}{50} & \multicolumn{4}{l}{100}	&  \multicolumn{4}{l}{200} \\
+			min\_samples 				& 10 &  10 &  20 							&  10 &  25 &  50 				& 	1 &	10 &	50 &  100		&   1 &   20 &  100 &  200 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	Ze względu na złożoność obliczeniową pomiarów, w pierwszej kolejności przeprowadzono pomiary na ograniczonym zakresie:
+	\begin{itemize}
+		\item \verb|n_neighbors|: 5, 10, 15, 20
+		\item \verb|min_cluster_size|: 10, 20, 50, 100
+	\end{itemize}
+	oraz pominięto liczenie wyniku \(C_{NPMI}\).
+	W tabeli~\ref{tab:avg_scores}a przedstawiono posortowane, uśrednione wyniki \(C_{UMass}\), \(s_c\), \(s_f\) oraz \(s_T\).
+	Na podstawie tych wyników zdecydowano się odrzucić metody bazujące na najlepszych wektorach wg.\ rankingu (top1 i top5),
+		ponieważ zarówno dla algorytmu LexRank, jak i TF-IDF dawały one zauważalnie gorsze wyniki od pozostałych metod.
+	Z tego powodu nie zostały one uwzględnione podczas obliczania wyników dla pełnego zakresu parametrów.
+	Uśrednione wyniki na pełnym zakresie, uwzględniające również metodę \(C_{NPMI}\), przedstawione zostały w tabeli~\ref{tab:avg_scores}b.
+	Dalsze omówienie tych wyników zawarte jest w kolejnym rozdziale.
+		
+	\begin{table}[htb]
+		\caption{Średnie wyniki dla zakresu parametrów: a) ograniczonego, b) pełnego}\label{tab:avg_scores} % chktex 9 chktex 10
+		\centering
+		\begin{minipage}[t]{.5\textwidth}
+			a)\par\medskip % chktex 10
+			\begin{tabular}{lr}
+				\toprule
+								metoda &	średni wynik \\
+				\midrule
+								sbert-default & 0.412 \\
+						sbert-tf-idf-top1 & 0.416 \\
+							use-lexrank-top5 & 0.459 \\
+						sbert-lexrank-top1 & 0.463 \\
+					use-lexrank-weighted & 0.465 \\
+							use-lexrank-top1 & 0.489 \\
+							use-tf-idf-top5 & 0.501 \\
+						sbert-tf-idf-top5 & 0.505 \\
+												tfidf & 0.516 \\
+					use-tf-idf-weighted & 0.522 \\
+						sbert-lexrank-top5 & 0.523 \\
+									tfidf-spacy & 0.558 \\
+											use-mean & 0.559 \\
+				sbert-tf-idf-weighted & 0.565 \\
+				sbert-lexrank-weighted & 0.572 \\
+										sbert-mean & 0.587 \\
+									use-default & 0.593 \\
+				\bottomrule
+			\end{tabular}
+		\end{minipage}%
+		\begin{minipage}[t]{.5\textwidth}
+			b)\par\medskip % chktex 10
+			\begin{tabular}{lr}
+				\toprule
+								metoda &	średni wynik \\
+				\midrule
+								sbert-default & 0.331 \\
+					use-lexrank-weighted & 0.426 \\
+					use-tf-idf-weighted & 0.525 \\
+				sbert-tf-idf-weighted & 0.531 \\
+				sbert-lexrank-weighted & 0.545 \\
+											use-mean & 0.551 \\
+										sbert-mean & 0.557 \\
+									use-default & 0.558 \\
+												tfidf & 0.580 \\
+									tfidf-spacy & 0.617 \\
+				\bottomrule
+				\end{tabular}
+		\end{minipage}
+	\end{table}
+
+	\subsection{Optymalizacje}
+		Ze względu na złożoność pamięciową algorytmów badających spójność reprezentacji tematów (rozdział~\ref{sec:coherence_scores}),
+			algorytmy te badały ograniczony zbiór dokumentów.
+		Aby jednak zachować zależności między dokumentami na pełnym zbiorze, w pierwszym kroku algorytm HDBSCAN grupuje wszystkie dokumenty.
+		Dopiero z pogrupowanych dokumentów losowane są próbki według zdefiniowanych \(test\_sample\) oraz \(test\_sample\_frac\),
+			które odpowiednio oznaczają minimalną liczbę próbek z każdej grupy, oraz część grupy.
+		Próbki losowane są w zależności od rozmiaru grupy \(N\):
+		\begin{itemize}
+			\item jeśli \(N\) jest większe niż \(\frac{test\_sample}{test\_sample\_frac}\), to losujemy \(test\_sample\_frac \cdot N\) próbek,
+			\item jeśli \(N\) jest większe niż \(test\_sample\), to losujemy \(test\_sample\) próbek,
+			\item jeśli \(N\) jest mniejsze niż \(test\_sample\), to bierzemy wszystkie \(N\) próbek.
+		\end{itemize}
+		Ustawiając \(test\_sample=100\) oraz \(test\_sample\_frac=0.2\) sprawiono,
+			że brane pod uwagę jest 20\% dokumentów z każdej grupy, ale nie mniej niż 100 (lub całość grupy).
+		Dolne ograniczenie \(test\_sample\) sprawia, że nie zawsze analizowane jest tyle samo dokumentów.
+		W zależności od liczby wykrytych tematów, analizowanych jest średnio od 60 do 90 tysięcy próbek (tabela~\ref{tab:support}).
+		Przeprowadzenie klastrowania na pełnym zbiorze danych umożliwia również poprawne przeprowadzenie testów spójności rozkładów tematów (rozdział~\ref{sec:consistency_scores})
+			na wszystkich dokumentach, co jest wymogiem algorytmu (ponieważ potrzebujemy wszystkie pary występujące zaraz po sobie).
+		
+		\begin{table}[htb]
+			\caption{Liczba analizowanych próbek w zależności od liczby wykrytych tematów (mediana)}\label{tab:support}
+			\centering
+			\begin{tabular}{lrl}
+				\toprule
+				liczba tematów  &  liczba próbek	&	\% korpusu \\
+				\midrule
+				(4 74]     &  58652 &	20.1\% \\
+				(74 107]   &  59586 &	20.4\% \\
+				(107 136]  &  61376 &	21.1\% \\
+				(136 175]  &  63410 &	21.8\% \\
+				(175 216]  &  65728 &	22.6\% \\
+				(216 260]  &  67814 &	23.3\% \\
+				(260 363]  &  70716 &	24.3\% \\
+				(363 502]  &  75451 &	25.9\% \\
+				(502 791]  &  82544 &	28.3\% \\
+				(791 3166] &  92502 &	31.7\% \\
+				\bottomrule
+			\end{tabular}
+		\end{table}
+
+\section{Ewaluacja LDA}
 	Tematy uzyskane metodą BERTopic zostały porównane z popularną metodą analizy tematycznej --- LDA\@.
 	W tym celu wykonano pomiary spójności algorytmami opisanymi w poprzednich rozdziałach.
 	Jedną z zasadniczych wad algorytmu LDA jest fakt, iż liczba tematów jest jego parametrem.
@@ -260,14 +413,14 @@ scores['avg'] = np.nanmean(minimax, axis=1)
 			250 & -0.037109 & -4.191849 \\
 			300 & -0.038166 & -4.027447 \\
 			\bottomrule
-			\end{tabular}			
+		\end{tabular}
 	\end{table}
 
 	Dla znalezionych tematów wygenerowano reprezentacje składające się z pięciu najwyżej ocenianych słów.
 	Losowo wybrane 5 tematów przedstawiono w tabeli~\ref{tab:lda_topics}a.
 	Dodatkowo, ze względu na to, iż mediana liczby znalezionych tematów algorytmem HDBSCAN wyniosła 219,
 		postanowiono zbadać również model LDA dla 200 tematów (tabela~\ref{tab:lda_topics}b).
-	Dla obu tych modeli widoczny jest problem opisany w rozdziale~\ref{sec:topic_modeling}.
+	Dla obu tych modeli widoczny jest problem opisany na początku rozdziału~\ref{sec:topic_modeling}.
 	Mianowicie, reprezentacje tematów zawierają wiele podobnych słów specyficznych dla całego korpusu, a nie tematu (,,ustawa'', ,,minister'', czy ,,poseł'').
 	Podjęto próby poszerzenia listy słów nieinformatywnych, jednak szybko okazało się, iż takich słów jest zbyt wiele
 		--- po usunięciu słów specyficznych dla korpusu nadal reprezentacje tematów składały się często ze słów typu ,,czas'', ,,kwestia'', ,,chodzi''.
