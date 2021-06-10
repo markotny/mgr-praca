@@ -118,6 +118,13 @@ return score
 	Końcowa ocena modelu jest średnią ocen \(C_{UMass}\), \(C_{NPMI}\), \(s_c\), \(s_f\) oraz \(s_T\) przeskalowanych do pełnego zakresu (0, 1).
 	Skalowanie odbywa się przy pomocy klasy \verb|MinMaxScaler| z biblioteki \verb|scikit-learn|,
 		jak przedstawiono w linijce 18 listingu~\ref{lst:final_score}.
+	Wykres końcowej, uśrednionej oceny dla każdego parametru przedstawiony jest na rysunku~\ref{fig:avg_scores}.
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.5\textwidth,angle=90]{rys05/avg.png}
+		\caption{Uśrednione wyniki dla wszystkich parametrów}\label{fig:avg_scores}
+	\end{figure}
 
 	\subsection{Ocena liczby przyporządkowanych dokumentów}\label{sec:score_not_found}
 		Miara oceniająca liczbę przyporządkowanych dokumentów korzysta bezpośrednio z wyniku grupowania.
@@ -440,7 +447,13 @@ scores['avg'] = np.nanmean(s, axis=1)
 	Podjęto próby poszerzenia listy słów nieinformatywnych, jednak szybko okazało się, iż takich słów jest zbyt wiele
 		--- po usunięciu słów specyficznych dla korpusu nadal reprezentacje tematów składały się często ze słów typu ,,czas'', ,,kwestia'', ,,chodzi''.
 	Nie stwierdzono zauważalnej różnicy między dokładnością reprezentacji wygenerowanych dla 80 tematów, a tymi dla 200.
-	
+	Niezadowalająca skuteczność LDA na używanym korpusie może być związana ze specyfiką posiedzeń sejmowych.
+	Stenografy z przemówień często zawierają różne komentarze, odniesienia do poprzedzających wypowiedzi itp.
+	W momencie, kiedy mówca wypowiada się jedynie nawiązując do tematu słowami typu ,,proponowana ustawa'',
+		nie sposób zrozumieć, o czym jest mowa, bez analizy poprzedzających wypowiedzi.
+	Jedną z zalet algorytmu HDBSCAN jest wykrywanie szumu, a więc takie wypowiedzi nie są na siłę przyporządkowywane do jakiegoś jednego tematu.
+	Dzięki temu tematy są znacznie bardziej spójne, niż te wygenerowane przez LDA\@.
+
 	\begin{table}[htb]
 		\caption{Reprezentacje pięciu losowo wybranych tematów dla LDA:\ a) 80 tematów, b) 200 tematów}\label{tab:lda_topics} % chktex 9 chktex 10
 		\centering
