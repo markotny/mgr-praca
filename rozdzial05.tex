@@ -109,7 +109,8 @@ return score
 
 \section{Końcowa ocena}
 	Powyższe metody nie poddają ocenie samej liczby tematów i liczby nieprzyporządkowanych dokumentów.
-	Z tego powodu, wysoki wynik mógłby osiągnąć model, który znalazłby zaledwie 5 tematów.\todo{Pokazać jakieś dane-rysunek albo tabelka}
+	Z tego powodu, wysoki wynik mógłby osiągnąć model, który znalazłby zaledwie 5 tematów.
+	Takie przypadki można znaleźć w tabeli z wynikami (rozdział~\ref{sec:all_scores}) dla modeli \emph{sbert-default}.
 	Taki model przyporządkuje wszystkie dokumenty generując bardzo ogólne tematy.
 	Podobnie wysoki wynik osiągnie model, który wygeneruje tysiące bardzo szczegółowych tematów.
 	Takie modele można odfiltrować definiując odpowiednie progi, jednak taka metoda wymusza ustanowienie założeń,
@@ -250,7 +251,7 @@ s = scaler.fit_transform(scores[['u_mass','c_npmi','s_c','s_f','s_T']])
 scores['avg'] = np.nanmean(s, axis=1)
 		\end{lstlisting}
 
-\section{Przeprowadzenie pomiarów}
+\section{Przeprowadzenie pomiarów}\label{sec:test_plan}
 	Pomiary metodami opisanymi w poprzednim rozdziale zaplanowano tak, by wyniki umożliwiły jak najszerszą analizę porównawczą.
 	Wektory zdań generowano następującymi metodami opisanymi w rozdziale~\ref{sec:vectors}:
 	\begin{itemize}
@@ -363,6 +364,8 @@ scores['avg'] = np.nanmean(s, axis=1)
 			że brane pod uwagę jest 20\% dokumentów z każdej grupy, ale nie mniej niż 100 (lub całość grupy).
 		Dolne ograniczenie \(test\_sample\) sprawia, że nie zawsze analizowane jest tyle samo dokumentów.
 		W zależności od liczby wykrytych tematów, analizowanych jest średnio od 60 do 90 tysięcy próbek (tabela~\ref{tab:support}).
+		Dodatkowo, jeśli liczba odnalezionych tematów była mniejsza niż 20 lub większa niż 1000, to testy \(C_{NPMI}\) oraz \(C_{UMass}\) były pomijane.
+
 		Przeprowadzenie klastrowania na pełnym zbiorze danych umożliwia również poprawne przeprowadzenie testów spójności rozkładów tematów (rozdział~\ref{sec:consistency_scores})
 			na wszystkich dokumentach, co jest wymogiem algorytmu (ponieważ potrzebujemy wszystkie pary występujące zaraz po sobie).
 		Oceny liczby przyporządkowanych dokumentów oraz liczby tematów opisane odpowiednio w rozdziałach~\ref{sec:score_not_found},~\ref{sec:score_topic_count}
