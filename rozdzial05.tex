@@ -142,7 +142,7 @@ return score
 			\caption{Liczba rozpoznanych dokumentów przed i po znormalizowaniu dla wybranych parametrów}\label{fig:not_found}
 		\end{figure}
 
-	\subsection{Ocena liczby tematów}
+	\subsection{Ocena liczby tematów}\label{sec:score_topic_count}
 		Dużo trudniej jest ocenić liczbę tematów, gdyż zarówno osiemdziesiąt ogólnych tematów,
 			jak i tysiąc szczegółowych mogą zostać uznane za odpowiednie.
 		Zważając jednak na specyfikę korpusu, przyjęto że różnorodność poruszanych kwestii powinna skutkować relatywnie dużą liczbą tematów.
@@ -365,7 +365,9 @@ scores['avg'] = np.nanmean(s, axis=1)
 		W zależności od liczby wykrytych tematów, analizowanych jest średnio od 60 do 90 tysięcy próbek (tabela~\ref{tab:support}).
 		Przeprowadzenie klastrowania na pełnym zbiorze danych umożliwia również poprawne przeprowadzenie testów spójności rozkładów tematów (rozdział~\ref{sec:consistency_scores})
 			na wszystkich dokumentach, co jest wymogiem algorytmu (ponieważ potrzebujemy wszystkie pary występujące zaraz po sobie).
-		
+		Oceny liczby przyporządkowanych dokumentów oraz liczby tematów opisane odpowiednio w rozdziałach~\ref{sec:score_not_found},~\ref{sec:score_topic_count}
+			również przeprowadzone zostały na pełnym korpusie.
+
 		\begin{table}[htb]
 			\caption{Liczba analizowanych próbek w zależności od liczby wykrytych tematów (mediana)}\label{tab:support}
 			\centering
