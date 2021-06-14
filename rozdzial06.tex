@@ -10,81 +10,148 @@
 	Wykres przedstawiony na rysunku~\ref{fig:avg_scores} ilustruje końcowe uśrednione wyniki.
 	W kolejnych rozdziałach omówione są te wyniki z podziałem na poszczególne modele.
 
-\section{SBERT}
-	Wektory wygenerowane przez modele SBERT oparte na transformerach są w stanie generować bardzo dobre wyniki,
-		ale wymagana jest analiza poszczególnych zdań, a nie całych wypowiedzi.
-	Jak pokazują wyniki uzyskane przez model \emph{sbert-default} (wiersze 0--83 tabeli w rozdziale~\ref{sec:all_scores}),
-		w zdecydowanej większości kombinacji parametrów otrzymane grupowania były bardzo ogólne --- od 5 do 25 tematów zwróciło aż 65\% testowanych wariantów.
-	Spowodowane jest to dostrojeniem modeli SBERT na korpusach złożonych ze zdań.
-	Model osiąga więc najwyższą dokładność analizując zdania standardowej długości, podczas gdy wypowiedzi sejmowe są znacznie dłuższe (rys.~\ref{fig:word_count}).
-	Analizując więc tak długie dokumenty, model bierze pod uwagę tylko początki wypowiedzi.
-	Te z kolei zwykle rozpoczynają się od formalnego przywitania, np. ,,Szanowna Pani Marszałek!'', ,,Szanowni Państwo!'' czy ,,Wysoka Izbo!''.
-	Stąd model, który analizuje całość wypowiedzi począwszy od przywitań, często podda analizie jedynie niewielki fragment merytorycznej części wypowiedzi.
-	Efekt ten jest szczególnie uwypuklony w przypadku modeli SBERT, które wyuczone są na zdaniach krótszych niż maksymalny limit wynikający z architektury
-		(który dla modeli bazujących na BERT wynosi 512 tokenów).
-	Tematy wygenerowane przez model o indeksie w tabeli z wynikami \textbf{37} przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
-	Można podejrzewać, że temat nr.~\emph{A} zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~\emph{C} przemawiający odnoszą się do agendy danego dnia.
-	Żadne z tych tematów nie nadają się do dalszej analizy.
+\section{Porównanie metod generowania wektorów}
+	W pierwszej kolejności porównane zostaną wyniki pod kątem metod utworzenia wektorów wypowiedzi.
+	Wyniki omawiane są zgodnie z kolejnością występowania w tabeli z wynikami zamieszczonej w rozdziale~\ref{sec:all_scores}.
 
-	\begin{table}[htb]
-		\caption{Reprezentacje wybranych tematów dla modelu sbert-default z parametrami (15,100,100)}\label{tab:sbert_default_topics} % chktex 9 chktex 10
-		\centering
-		\small
-		\begin{tabularx}{\textwidth}{rl}
-			\toprule
-			A & jerzy | stanisław | kazimierz | henryk | płażyński \\
-			B & ustawy | państwa | komisji | europejskiej | polski \\
-			C & godz 12 | wspólnie komisją | godz 13 | godz 11 | godz 16 \\
-			D & wspólnie komisją | godz 11 | godz 12 | następujących komisji | posiedzenia następujących komisji \\
-			\bottomrule
-		\end{tabularx}
-	\end{table}
+	\subsection{Sentence Transformers}
+		Wektory wygenerowane przez modele SBERT oparte na transformerach są w stanie generować bardzo dobre wyniki,
+			ale wymagana jest analiza poszczególnych zdań, a nie całych wypowiedzi.
+		Jak pokazują wyniki uzyskane przez model \emph{sbert-default} (wiersze 0--83 tabeli z wynikami),
+			w zdecydowanej większości kombinacji parametrów otrzymane grupowania były bardzo ogólne --- od 5 do 25 tematów zwróciło aż 65\% testowanych wariantów.
+		Spowodowane jest to dostrojeniem modeli SBERT na korpusach złożonych ze zdań.
+		Model osiąga więc najwyższą dokładność analizując zdania standardowej długości, podczas gdy wypowiedzi sejmowe są znacznie dłuższe (rys.~\ref{fig:word_count}).
+		Analizując więc tak długie dokumenty, model bierze pod uwagę tylko początki wypowiedzi.
+		Te z kolei zwykle rozpoczynają się od formalnego przywitania, np. ,,Szanowna Pani Marszałek!'', ,,Szanowni Państwo!'' czy ,,Wysoka Izbo!''.
+		Stąd model, który analizuje całość wypowiedzi począwszy od przywitań, często podda analizie jedynie niewielki fragment merytorycznej części wypowiedzi.
+		Efekt ten jest szczególnie uwypuklony w przypadku modeli SBERT, które wyuczone są na zdaniach krótszych niż maksymalny limit wynikający z architektury
+			(który dla modeli bazujących na BERT wynosi 512 tokenów).
+		Tematy wygenerowane przez model o indeksie w tabeli z wynikami \textbf{37} przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
+		Można podejrzewać, że temat nr.~\emph{A} zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~\emph{C} przemawiający odnoszą się do agendy danego dnia.
+		Żadne z tych tematów nie nadają się do dalszej analizy.
 
-	Warto jednak zauważyć, iż nawet ten model po dostrojeniu parametrów potrafi wygenerować czytelne tematy.
-	Oznacza to, że część merytorycznych informacji została przeanalizowana podczas generowania wektorów.
-	Są one wydobywane, jeśli parametry UMAP oraz HDBSCAN zostaną dostrojone tak,
-		aby brane pod uwagę były tylko lokalne zależności (niskie \verb|n_neighbors| oraz \verb|min_samples|).
-	Wraz ze wzrostem wartości tych parametrów, brane są pod uwagę ogólniejsze podobieństwa,
-		do w przypadku takiego modelu oznacza formalne przywitania, czy nazwiska posłów.
-	Jednak nawet najlepszy model (indeks \textbf{34}) jako szum oznaczył prawie 165 tysięcy wypowiedzi, podczas gdy mediana wynosi ok.~137 tysięcy.
-	Wynika to z tego, że nawet jeśli model był w stanie wyciągnąć informacje z początku wypowiedzi, to nie zawsze było to wystarczające, przez co więcej dokumentów zostało zaklasyfikowanych jako szum.
-	Średni wynik tego modelu wynoszący w zaokrągleniu \(0.45\) również jest znacznie poniżej mediany \(0.57\).
+		\begin{table}[htb]
+			\caption{Reprezentacje wybranych tematów dla modelu sbert-default z parametrami (15,100,100)}\label{tab:sbert_default_topics} % chktex 9 chktex 10
+			\centering
+			\small
+			\begin{tabularx}{\textwidth}{rl}
+				\toprule
+				A & jerzy | stanisław | kazimierz | henryk | płażyński \\
+				B & ustawy | państwa | komisji | europejskiej | polski \\
+				C & godz 12 | wspólnie komisją | godz 13 | godz 11 | godz 16 \\
+				D & wspólnie komisją | godz 11 | godz 12 | następujących komisji | posiedzenia następujących komisji \\
+				\bottomrule
+			\end{tabularx}
+		\end{table}
 
-	Zdecydowanie lepiej sprawdziły się warianty modelu, które w pierwszej kolejności dzieliły wypowiedź na zdania, a następnie łączyły wektory wygenerowane dla każdego zdania osobno.
-	Najlepszy wynik osiągnął model ważący zdania algorytmem LexRank (10 najwyższych wyników przedstawiono w tabeli~\ref{tab:sbert_top}).
-	Z trzech analizowanych metod podziału na zdania, metoda oparta o ważenie wektorami tf-idf wypadła najgorzej, co sugeruje iż metoda ta powoduje zbyt dużą utratę informacji.
-	Na podstawie wyników nie można również jednoznacznie stwierdzić, iż ważenie wektorów algorytmem LexRank znacząco podnosi jakość wektorów.
-	Co prawda najlepszy wynik osiągnął algorytm ważony tym sposobem,
-		jednak mediana wyników najwyższa jest dla algorytmu \emph{sbert-mean} (0.592 vs 0.579 dla \emph{sbert-lexrank-weighted} oraz 0.565 dla \emph{sbert-tf-idf-weighted}).
-	Wyniki te skłaniają ku wnioskom, że próby ważenia wektorów skutkują utratą informacji, a nie wytłumianiem szumu, jak pierwotnie zakładano.
-	Jak pokazują wyniki na wykresie~\ref{fig:consistency_score}, wektory ważone algorytmem tf-idf osiągają znacznie gorsze wyniki,
-		podczas gdy uśrednione i ważone algorytmem LexRank są do siebie zbliżone.
-	W pozostałych metrykach wszystkie trzy metody osiągały podobne wyniki co oznacza, że ważenie wektorów w najlepszym wypadku jedynie nie pogarsza wyniku.
+		Warto jednak zauważyć, iż nawet ten model po dostrojeniu parametrów potrafi wygenerować czytelne tematy.
+		Oznacza to, że część merytorycznych informacji została przeanalizowana podczas generowania wektorów.
+		Są one wydobywane, jeśli parametry UMAP oraz HDBSCAN zostaną dostrojone tak,
+			aby brane pod uwagę były tylko lokalne zależności (niskie \verb|n_neighbors| oraz \verb|min_samples|).
+		Wraz ze wzrostem wartości tych parametrów, brane są pod uwagę ogólniejsze podobieństwa,
+			do w przypadku takiego modelu oznacza formalne przywitania, czy nazwiska posłów.
+		Jednak nawet najlepszy model (indeks \textbf{34}) jako szum oznaczył prawie 165 tysięcy wypowiedzi, podczas gdy mediana wynosi ok.~137 tysięcy.
+		Wynika to z tego, że nawet jeśli model był w stanie wyciągnąć informacje z początku wypowiedzi, to nie zawsze było to wystarczające, przez co więcej dokumentów zostało zaklasyfikowanych jako szum.
+		Średni wynik tego modelu wynoszący w zaokrągleniu \(0.45\) również jest znacznie poniżej mediany \(0.57\).
+
+		Zdecydowanie lepiej sprawdziły się warianty modelu, które w pierwszej kolejności dzieliły wypowiedź na zdania, a następnie łączyły wektory wygenerowane dla każdego zdania osobno.
+		Najlepszy wynik osiągnął model ważący zdania algorytmem LexRank (10 najwyższych wyników przedstawiono w tabeli~\ref{tab:sbert_top}).
+		Z trzech analizowanych metod podziału na zdania, metoda oparta o ważenie wektorami tf-idf wypadła najgorzej, co sugeruje iż metoda ta powoduje zbyt dużą utratę informacji.
+		Na podstawie wyników nie można również jednoznacznie stwierdzić, iż ważenie wektorów algorytmem LexRank znacząco podnosi jakość wektorów.
+		Co prawda najlepszy wynik osiągnął algorytm ważony tym sposobem,
+			jednak mediana wyników najwyższa jest dla algorytmu \emph{sbert-mean} (0.592 vs 0.579 dla \emph{sbert-lexrank-weighted} oraz 0.565 dla \emph{sbert-tf-idf-weighted}).
+		Wyniki te skłaniają ku wnioskom, że próby ważenia wektorów skutkują utratą informacji, a nie wytłumianiem szumu, jak pierwotnie zakładano.
+		Jak pokazują wyniki na wykresie~\ref{fig:consistency_score}, wektory ważone algorytmem tf-idf osiągają znacznie gorsze wyniki,
+			podczas gdy uśrednione i ważone algorytmem LexRank są do siebie zbliżone.
+		W pozostałych metrykach wszystkie trzy metody osiągały podobne wyniki co oznacza, że ważenie wektorów w najlepszym wypadku jedynie nie pogarsza wyniku.
+		
+		W przypadku modeli \emph{top1} traktujących wektor o najwyższym wyniku (lub średnią pięciu wektorów --- \emph{top5}) wg.\ rankingu LexRank lub tfidf,
+			wyniki były znacznie gorsze od pozostałych ze względu na utratę zbyt dużej ilości danych.
+		Podobnych przyczyn (aczkolwiek w mniejszym stopniu) można się doszukiwać w przyczynach gorszej dokładności modeli ważonych.
+		Okazuje się, że każda informacja zawarta w wektorach zdań może okazać się istotna i podczas analizy wielkiej ilości danych,
+			informacje te mogą okazać się istotne.
+		Z tego powodu najlepsze wyniki osiągnął model \emph{sbert-mean}, który uśrednia wektory wszystkich zdań bez wag.
+
+		\begin{table}[htb]
+			\caption{Wyniki 10 najlepszych modeli SBERT}\label{tab:sbert_top}
+			\centering
+			\begin{tabular}{llrrrr}
+				\toprule
+				{}  &	\emph{model} &  \emph{n\_neighbors} &  \emph{min\_cluster\_size} &  \emph{min\_samples} &   \emph{avg} \\
+				\midrule
+				118 &  sbert-lexrank-weighted &           15 &               100 &            1 &  0.679364 \\
+				202 &              sbert-mean &           15 &               100 &            1 &  0.658695 \\
+				92  &  sbert-lexrank-weighted &            5 &               100 &           50 &  0.653523 \\
+				201 &              sbert-mean &           15 &                50 &           50 &  0.647214 \\
+				285 &   sbert-tf-idf-weighted &           15 &                50 &           50 &  0.642425 \\
+				230 &              sbert-mean &           25 &               100 &            1 &  0.640095 \\
+				107 &  sbert-lexrank-weighted &           10 &               100 &          100 &  0.638268 \\
+				187 &              sbert-mean &           10 &                50 &           50 &  0.636077 \\
+				191 &              sbert-mean &           10 &               100 &          100 &  0.635758 \\
+				132 &  sbert-lexrank-weighted &           20 &               100 &            1 &  0.632976 \\
+				\bottomrule
+				\end{tabular}
+		\end{table}
+
+	\subsection{TF-IDF}
+		Metoda tworzenia wektorów za pomocą algorytmu TF-IDF okazała się skuteczna do analizy danych z korpusu.
+		Skuteczność tego algorytmu podyktowana jest specyfiką problemu.
+		Rozmiar analizowanych wypowiedzi, który jest źródłem problemów dla algorytmów opartych o uczenie maszynowe,
+			jednocześnie sprzyja dokładności algorytmów statystycznych.
+		Im dłuższe są analizowane dokumenty, tym większa różnorodność występujących słów i większa szansa na znalezienie podobnych słów w wypowiedziach na ten sam temat.
+		Jak pokazano na rys.~\ref{fig:topic_counts}, analiza wektorów tf-idf skutkowała wykryciem znacznie większej liczby tematów, niż w przypadku pozostałych metod.
+		Obserwacja ta jest zgodna z oczekiwaniami, ponieważ ze względu na metodykę, w której nie ma pojęcia podobieństwa słów,
+			wiele dokumentów nie ma wspólnych tokenów pomimo podobnej tematyki (z powodu różnych odmian tych samych słów).
+		Jeśli więc już wystąpią jakieś wspólne słowa, to powstałe wektory będą blisko siebie w przestrzeni.
+		Należy więc oczekiwać, że wektory wygenerowane w ten sposób będą zawierać wiele grup silnie skoncentrowanych.
+		
+		Jak się jednak okazuje, odpowiednio skonfigurowany algorytm HDBSCAN potrafi sobie poradzić również z takimi przestrzeniami.
+		Wraz ze wzrostem wartości parametru \emph{min\_cluster\_size}, powstrzymujemy algorytm przed rozbiciem klastrów na pomniejsze grupy
+			(podczas etapu kondensowania hierarchii grup opisanego w rozdziale~\ref{sec:hdbscan}).
+		W ten sposób możliwa jest redukcja liczby tematów z prawie 1800 (dla \emph{min\_cluster\_size=5}) do mniej niż 200 (dla \emph{min\_cluster\_size=200}).
+		Efekt ten jest widoczny na wykresie~\ref{fig:topic_counts}, gdzie najwyższy wynik uzyskał model dla parametrów \emph{min\_cluster\_size=200} oraz \emph{min\_samples=100}.
+		Uzyskał on prawie tak wysoki wynik, jak pozostałe modele dla parametrów \emph{min\_cluster\_size=100} oraz \emph{min\_samples=1}.
+		Proces ten pozwolił wektorom tf-idf na osiągnięcie lepszych wyników niż jakiekolwiek inne analizowane metody (rys.~\ref{fig:avg_scores}, zakres dla \emph{min\_cluster\_size=200}).
+
+		Zgodnie z oczekiwaniami, wstępne przetworzenie danych poprzez lematyzację przyniosło wymierne polepszenie wyników.
+		Średni wynik dla wszystkich parametrów wzrósł z \(0.58\) do \(0.62\),
+			podczas gdy wynik dla najlepszych parametrów (modele o indeksach odpowiednio 376 i 457 w tabeli z wynikami) wzrósł z \(0.71\) do \(0.75\).
+		Najlepszy wynik uzyskany metodą inną niż tfidf wyniósł \(0.68\) uzyskany ex aequo przez modele \emph{sbert-lexrank-weighted} (indeks 118) oraz \emph{use-default} (indeks 443).
+		Przewaga jest więc istotna i widoczna w wynikach.
+		\todo{Opisać jakieś minusy}
+		
+	\subsection{Universal Sentence Encoder}
+		Wariant USE testowany w pracy zbudowany jest na konwolucyjnych sieciach neuronowych.
+		Architektura ta nie jest zwykle utożsamiana z zadaniami NLP (ang.\ \emph{Natural Language Processing}), jednak również możliwe jest osiągnięcie dobrych rezultatów.
+		Tak też było w tym przypadku.
+		Ciekawą różnicą w stosunku do modeli opartych o SBERT, wektory wygenerowane przez USE dawały najlepsze wyniki dla modeli analizujących bezpośrednio całą wypowiedź (\emph{use-default}).
+		Oznacza to, że model USE dużo lepiej radzi sobie z długimi zdaniami.
+		Różnica ta obrazuje, na jak krótkich zdaniach wytrenowany został model SBERT.
+		Pomimo większego limitu wejścia tych modeli (512 tokenów), model operujący na całych wypowiedziach (\emph{sbert-default}) osiągał najsłabsze wyniki.
+		Tymczasem model USE najlepsze wyniki osiągał na całych wypowiedziach pomimo bardziej ograniczającego limitu 256 tokenów.
+		Wysoka dokładność USE może też być efektem znanego zjawiska (zwykle w kontekście artykułów czy wiadomości),
+			gdzie na początku dokumentu zawarta jest często informacja, o czym jest dokument (jako wstęp).
+		Możliwe, że wypowiedzi posłów w sejmie również często posiadają analogiczną strukturę
+			(na wstępie odniesienie się do tego, o czym jest mowa, a następnie rozwinięcie szczegółów), co ułatwia przyporządkowanie tematów na podstawie samego początku dokumentu.
+
+		Jak pokazano na podsumowaniu w tabeli~\ref{tab:avg_scores}b, wektory wygenerowane przez USE dla każdego zdania z osobna, osiągają istotnie gorsze wyniki,
+			jeśli zastosowane zostało ważenie wektorów.
+		Użycie zwykłej średniej wektorów daje znacznie lepsze wyniki, aczkolwiek różnica między tymi dwoma podejściami jest diametralna
+			(w przeciwieństwie do wektorów SBERT, gdzie ważone wektory są niewiele gorsze).
 	
-	W przypadku modeli \emph{top1} traktujących wektor o najwyższym wyniku (lub średnią pięciu wektorów --- \emph{top5}) wg.\ rankingu LexRank lub tfidf,
-		wyniki były znacznie gorsze od pozostałych ze względu na utratę zbyt dużej ilości danych.
-	Podobnych przyczyn (aczkolwiek w mniejszym stopniu) można się doszukiwać w przyczynach gorszej dokładności modeli ważonych.
-	Okazuje się, że każda informacja zawarta w wektorach zdań może okazać się istotna i podczas analizy wielkiej ilości danych,
-		informacje te mogą okazać się istotne.
-	Z tego powodu najlepsze wyniki osiągnął model \emph{sbert-mean}, który uśrednia wektory wszystkich zdań bez wag.
+\section{Porównanie z LDA}
+	Tematy wygenerowane przez LDA okazały się mało użyteczne ze względu na niską jakość reprezentacji (rozdział~\ref{sec:lda}).
+	Niemniej warto jednak przyjrzeć się wynikom funkcji \(C_{NPMI}\) i \(C_{UMass}\) ukazanym na rys.~\ref{fig:lda_scores}.
+	Obie te miary oceniły najwyżej modele zawierające do 80 tematów.
+	Jak wykazała manualna analiza, reprezentacje tych tematów były nieporównywalnie gorsze od reprezentacji tematów wygenerowanych przez BERTopic.
+	Pomimo to, model LDA dla 80 tematów osiąga wynik ok.~0.068 (tabela~\ref{tab:lda_scores}),
+		podczas gdy tak wysoką wartość osiąga jedynie kilka modeli wygenerowanych przez BERTopic (np.~model tfidf o indeksie 367).
+	Jest to znak, że metryka ta może nie być dobrym wyznacznikiem jakości tematów dla tego korpusu.
 
-	\begin{table}[htb]
-		\caption{Wyniki 10 najlepszych modeli SBERT}\label{tab:sbert_top}
-		\centering
-		\begin{tabular}{llrrrr}
-			\toprule
-			{}  &	\emph{model} &  \emph{n\_neighbors} &  \emph{min\_cluster\_size} &  \emph{min\_samples} &   \emph{avg} \\
-			\midrule
-			118 &  sbert-lexrank-weighted &           15 &               100 &            1 &  0.679364 \\
-			202 &              sbert-mean &           15 &               100 &            1 &  0.658695 \\
-			92  &  sbert-lexrank-weighted &            5 &               100 &           50 &  0.653523 \\
-			201 &              sbert-mean &           15 &                50 &           50 &  0.647214 \\
-			285 &   sbert-tf-idf-weighted &           15 &                50 &           50 &  0.642425 \\
-			230 &              sbert-mean &           25 &               100 &            1 &  0.640095 \\
-			107 &  sbert-lexrank-weighted &           10 &               100 &          100 &  0.638268 \\
-			187 &              sbert-mean &           10 &                50 &           50 &  0.636077 \\
-			191 &              sbert-mean &           10 &               100 &          100 &  0.635758 \\
-			132 &  sbert-lexrank-weighted &           20 &               100 &            1 &  0.632976 \\
-			\bottomrule
-			\end{tabular}
-	\end{table}
+	Metryka \(C_{UMass}\) wydaje się być bardziej spójna dla tego korpusu.
+	Model LDA dla 80 tematów osiągnął wartość \(-0.813\).
+	Nadal jest to wysoka wartość, jak na jakość reprezentacji tematów, jednak nie jest to wartość nieprzekraczana przez modele BERTopic.
+	Porównując reprezentacje tematów obu typów modeli dla tego samego wyniku \(C_{UMass}\) wciąż widoczna jest duża różnica w jakości,
+		dlatego metryka ta również nie jest idealnym odwzorowaniem jakości tematów.
+	
+\section{Omówienie wyników poszczególnych metryk}
