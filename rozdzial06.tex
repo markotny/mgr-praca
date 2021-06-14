@@ -1,8 +1,51 @@
 % !TeX root = ./Dyplom.tex
 
-\chapter{Omówienie wyników}
+\chapter{Analiza wyników}
 	Szczegółowe wyniki zostały przedstawione w rozdziale~\ref{sec:all_scores}.
 	W tabeli zawarte są wszystkie metody, dla których wykonane zostały pełne testy (jak opisano w rozdziale~\ref{sec:test_plan}).
 	W kolumnach przedstawiono kolejno parametry testów, liczbę znalezionych tematów i liczbę nieprzypisanych dokumentów, wyniki testów oraz wynik uśredniony.
-	Jeśli dla danych parametrów liczba tematów była poza zakresem [50-1000], to niektóre testy były pomijane.
-	Wtedy w kolumnach wpisana jest wartość ,,<NA>''
+	Jeśli dla danych parametrów liczba tematów była poza zakresem [50--1000], to niektóre testy były pomijane w celach optymalizacyjnych.
+	Wtedy w kolumnach wpisana jest wartość ,,<NA>''.
+
+	Wykres przedstawiony na rysunku~\ref{fig:avg_scores} ilustruje końcowe uśrednione wyniki.
+	W kolejnych rozdziałach omówione są te wyniki z podziałem na poszczególne modele.
+
+\section{SBERT}
+	Wektory wygenerowane przez modele SBERT oparte na transformerach są w stanie generować bardzo dobre wyniki,
+		ale wymagana jest analiza poszczególnych zdań, a nie całych wypowiedzi.
+	Jak pokazują wyniki uzyskane przez model \emph{sbert-default} (wiersze 0--83 tabeli w rozdziale~\ref{sec:all_scores}),
+		w zdecydowanej większości kombinacji parametrów otrzymane grupowania były bardzo ogólne --- od 5 do 25 tematów zwróciło aż 65\% testowanych wariantów.
+	Spowodowane jest to dostrojeniem modeli SBERT na korpusach złożonych ze zdań.
+	Model osiąga więc najwyższą dokładność analizując zdania standardowej długości, podczas gdy wypowiedzi sejmowe są znacznie dłuższe (rys.~\ref{fig:word_count}).
+	Analizując więc tak długie dokumenty, model bierze pod uwagę tylko początki wypowiedzi.
+	Te z kolei zwykle rozpoczynają się od formalnego przywitania, np. ,,Szanowna Pani Marszałek!'', ,,Szanowni Państwo!'' czy ,,Wysoka Izbo!''.
+	Stąd model, który analizuje całość wypowiedzi począwszy od przywitań, często podda analizie jedynie niewielki fragment merytorycznej części wypowiedzi.
+	Efekt ten jest szczególnie uwypuklony w przypadku modeli SBERT, które wyuczone są na zdaniach krótszych niż maksymalny limit wynikający z architektury
+		(który dla modeli bazujących na BERT wynosi 512 tokenów).
+	Tematy wygenerowane przez model o indeksie w tabeli z wynikami \textbf{37} przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
+	Można podejrzewać, że temat nr.~0 zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~2 przemawiający odnoszą się do agendy danego dnia.
+	Żadne z tych tematów nie nadają się do dalszej analizy.
+
+	\begin{table}[htb]
+		\caption{Reprezentacje wybranych tematów dla modelu sbert-default z parametrami (15,100,100)}\label{tab:sbert_default_topics} % chktex 9 chktex 10
+		\centering
+		\small
+		\begin{tabularx}{\textwidth}{rl}
+			\toprule
+			0 & jerzy | stanisław | kazimierz | henryk | płażyński \\
+			1 & ustawy | państwa | komisji | europejskiej | polski \\
+			2 & godz 12 | wspólnie komisją | godz 13 | godz 11 | godz 16 \\
+			3 & wspólnie komisją | godz 11 | godz 12 | następujących komisji | posiedzenia następujących komisji \\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
+
+	Warto jednak zauważyć, iż nawet ten model po dostrojeniu parametrów potrafi wygenerować czytelne tematy.
+	Oznacza to, że część merytorycznych informacji została przeanalizowana podczas generowania wektorów.
+	Są one wydobywane, jeśli parametry UMAP oraz HDBSCAN zostaną dostrojone tak,
+		aby brane pod uwagę były tylko lokalne zależności (niskie \verb|n_neighbors| oraz \verb|min_samples|).
+	Wraz ze wzrostem wartości tych parametrów, brane są pod uwagę ogólniejsze podobieństwa,
+		do w przypadku takiego modelu oznacza formalne przywitania, czy nazwiska posłów.
+	Jednak nawet najlepszy model (indeks \textbf{34}) jako szum oznaczył prawie 165 tysięcy wypowiedzi, podczas gdy mediana wynosi ok.~137 tysięcy.
+	Wynika to z tego, że nawet jeśli model był w stanie wyciągnąć informacje z początku wypowiedzi, to nie zawsze było to wystarczające, przez co więcej dokumentów zostało zaklasyfikowanych jako szum.
+	Średni wynik tego modelu wynoszący w zaokrągleniu \(0.45\) również jest znacznie poniżej mediany \(0.57\).
