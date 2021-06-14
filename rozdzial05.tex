@@ -23,7 +23,7 @@
 	Jeśli para słów często występuje razem w dokumentach, to są one powiązane.
 	Można więc określić spójność całej reprezentacji tematu badając wszystkie w niej zawarte pary słów.
 	Miara ta porównana została z wynikami zadania podmiany słowa i uzyskała ona lepszą korelację z ocenami ludzi.
-	Wykres dla \emph{n\_neighbors} równego 100 przedstawiony został na rys.~\ref{fig:umass_score}.
+	Wykres dla \emph{n\_neighbors} równego 15 przedstawiony został na rys.~\ref{fig:umass_score}.
 	Format parametrów na osi x na tym wykresie i wszystkich kolejnych jest następujący: <n\_neighbors>: <min\_cluster\_size>, <min\_samples>.
 
 	\begin{figure}[htb]
@@ -37,7 +37,7 @@
 	Kontekst jest definiowany jako tzw.\ przesuwne okno (ang.\ \emph{sliding window}) zwierające \(\pm 5\) otaczających słów.
 	Następnie wektory są ważone algorytmem NPMI (ang.\ \emph{Normalized Point Mutual Information}).
 	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami wektorów kontekstowych słów tematu.
-	Wykres dla \emph{n\_neighbors} równego 100 przedstawiony został na rys.~\ref{fig:npmi_score}.
+	Wykres dla \emph{n\_neighbors} równego 15 przedstawiony został na rys.~\ref{fig:npmi_score}.
 
 	\begin{figure}[htb]
 		\centering
@@ -74,6 +74,8 @@
 	Działanie to rekompensuje przejścia między tematami, które muszą wystąpić i nie są błędem.
 	Takich przejść w ciągu dnia wystąpi co najmniej tyle, ile jest tematów minus jeden.
 	Końcowy wynik obliczany jest jako stosunek zgadzających się par do wszystkich zliczonych par.
+
+	Wykres dla parametru \emph{min\_cluter\_size} równego 100 przedstawiony został na wykresie~\ref{fig:consistency_score}.
 	
 	\begin{lstlisting}[style=algorithm,label=lst:consistency_alg,caption=Algorytm obliczania spójności tematów]
 input: speeches sorted by original order of speaking, with date and assigned topic identifier
@@ -106,6 +108,12 @@ for each speeches in data grouped by date do
 score = sum(same_per_day) / sum(same_per_day, different_per_day)
 return score
 	\end{lstlisting}
+
+	\begin{figure}[htb]
+		\centering
+		\includegraphics[width=\linewidth]{rys05/c_su.png}
+		\caption{Wyniki \(s_c\) dla parametru \emph{min\_cluster\_size} równego 100}\label{fig:consistency_score}
+	\end{figure}
 
 \section{Końcowa ocena}
 	Powyższe metody nie poddają ocenie samej liczby tematów i liczby nieprzyporządkowanych dokumentów.

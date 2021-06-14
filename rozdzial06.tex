@@ -23,7 +23,7 @@
 	Efekt ten jest szczególnie uwypuklony w przypadku modeli SBERT, które wyuczone są na zdaniach krótszych niż maksymalny limit wynikający z architektury
 		(który dla modeli bazujących na BERT wynosi 512 tokenów).
 	Tematy wygenerowane przez model o indeksie w tabeli z wynikami \textbf{37} przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
-	Można podejrzewać, że temat nr.~0 zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~2 przemawiający odnoszą się do agendy danego dnia.
+	Można podejrzewać, że temat nr.~\emph{A} zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~\emph{C} przemawiający odnoszą się do agendy danego dnia.
 	Żadne z tych tematów nie nadają się do dalszej analizy.
 
 	\begin{table}[htb]
@@ -32,10 +32,10 @@
 		\small
 		\begin{tabularx}{\textwidth}{rl}
 			\toprule
-			0 & jerzy | stanisław | kazimierz | henryk | płażyński \\
-			1 & ustawy | państwa | komisji | europejskiej | polski \\
-			2 & godz 12 | wspólnie komisją | godz 13 | godz 11 | godz 16 \\
-			3 & wspólnie komisją | godz 11 | godz 12 | następujących komisji | posiedzenia następujących komisji \\
+			A & jerzy | stanisław | kazimierz | henryk | płażyński \\
+			B & ustawy | państwa | komisji | europejskiej | polski \\
+			C & godz 12 | wspólnie komisją | godz 13 | godz 11 | godz 16 \\
+			D & wspólnie komisją | godz 11 | godz 12 | następujących komisji | posiedzenia następujących komisji \\
 			\bottomrule
 		\end{tabularx}
 	\end{table}
@@ -49,3 +49,42 @@
 	Jednak nawet najlepszy model (indeks \textbf{34}) jako szum oznaczył prawie 165 tysięcy wypowiedzi, podczas gdy mediana wynosi ok.~137 tysięcy.
 	Wynika to z tego, że nawet jeśli model był w stanie wyciągnąć informacje z początku wypowiedzi, to nie zawsze było to wystarczające, przez co więcej dokumentów zostało zaklasyfikowanych jako szum.
 	Średni wynik tego modelu wynoszący w zaokrągleniu \(0.45\) również jest znacznie poniżej mediany \(0.57\).
+
+	Zdecydowanie lepiej sprawdziły się warianty modelu, które w pierwszej kolejności dzieliły wypowiedź na zdania, a następnie łączyły wektory wygenerowane dla każdego zdania osobno.
+	Najlepszy wynik osiągnął model ważący zdania algorytmem LexRank (10 najwyższych wyników przedstawiono w tabeli~\ref{tab:sbert_top}).
+	Z trzech analizowanych metod podziału na zdania, metoda oparta o ważenie wektorami tf-idf wypadła najgorzej, co sugeruje iż metoda ta powoduje zbyt dużą utratę informacji.
+	Na podstawie wyników nie można również jednoznacznie stwierdzić, iż ważenie wektorów algorytmem LexRank znacząco podnosi jakość wektorów.
+	Co prawda najlepszy wynik osiągnął algorytm ważony tym sposobem,
+		jednak mediana wyników najwyższa jest dla algorytmu \emph{sbert-mean} (0.592 vs 0.579 dla \emph{sbert-lexrank-weighted} oraz 0.565 dla \emph{sbert-tf-idf-weighted}).
+	Wyniki te skłaniają ku wnioskom, że próby ważenia wektorów skutkują utratą informacji, a nie wytłumianiem szumu, jak pierwotnie zakładano.
+	Jak pokazują wyniki na wykresie~\ref{fig:consistency_score}, wektory ważone algorytmem tf-idf osiągają znacznie gorsze wyniki,
+		podczas gdy uśrednione i ważone algorytmem LexRank są do siebie zbliżone.
+	W pozostałych metrykach wszystkie trzy metody osiągały podobne wyniki co oznacza, że ważenie wektorów w najlepszym wypadku jedynie nie pogarsza wyniku.
+	
+	W przypadku modeli \emph{top1} traktujących wektor o najwyższym wyniku (lub średnią pięciu wektorów --- \emph{top5}) wg.\ rankingu LexRank lub tfidf,
+		wyniki były znacznie gorsze od pozostałych ze względu na utratę zbyt dużej ilości danych.
+	Podobnych przyczyn (aczkolwiek w mniejszym stopniu) można się doszukiwać w przyczynach gorszej dokładności modeli ważonych.
+	Okazuje się, że każda informacja zawarta w wektorach zdań może okazać się istotna i podczas analizy wielkiej ilości danych,
+		informacje te mogą okazać się istotne.
+	Z tego powodu najlepsze wyniki osiągnął model \emph{sbert-mean}, który uśrednia wektory wszystkich zdań bez wag.
+
+	\begin{table}[htb]
+		\caption{Wyniki 10 najlepszych modeli SBERT}\label{tab:sbert_top}
+		\centering
+		\begin{tabular}{llrrrr}
+			\toprule
+			{}  &	\emph{model} &  \emph{n\_neighbors} &  \emph{min\_cluster\_size} &  \emph{min\_samples} &   \emph{avg} \\
+			\midrule
+			118 &  sbert-lexrank-weighted &           15 &               100 &            1 &  0.679364 \\
+			202 &              sbert-mean &           15 &               100 &            1 &  0.658695 \\
+			92  &  sbert-lexrank-weighted &            5 &               100 &           50 &  0.653523 \\
+			201 &              sbert-mean &           15 &                50 &           50 &  0.647214 \\
+			285 &   sbert-tf-idf-weighted &           15 &                50 &           50 &  0.642425 \\
+			230 &              sbert-mean &           25 &               100 &            1 &  0.640095 \\
+			107 &  sbert-lexrank-weighted &           10 &               100 &          100 &  0.638268 \\
+			187 &              sbert-mean &           10 &                50 &           50 &  0.636077 \\
+			191 &              sbert-mean &           10 &               100 &          100 &  0.635758 \\
+			132 &  sbert-lexrank-weighted &           20 &               100 &            1 &  0.632976 \\
+			\bottomrule
+			\end{tabular}
+	\end{table}
