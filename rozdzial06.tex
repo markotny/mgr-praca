@@ -93,7 +93,7 @@
 				\end{tabular}
 		\end{table}
 
-	\subsection{TF-IDF}
+	\subsection{TF-IDF}\label{sec:tfidf_summary}
 		Metoda tworzenia wektorów za pomocą algorytmu TF-IDF okazała się skuteczna do analizy danych z korpusu.
 		Skuteczność tego algorytmu podyktowana jest specyfiką problemu.
 		Rozmiar analizowanych wypowiedzi, który jest źródłem problemów dla algorytmów opartych o uczenie maszynowe,
@@ -111,14 +111,19 @@
 		W ten sposób możliwa jest redukcja liczby tematów z prawie 1800 (dla \emph{min\_cluster\_size=5}) do mniej niż 200 (dla \emph{min\_cluster\_size=200}).
 		Efekt ten jest widoczny na wykresie~\ref{fig:topic_counts}, gdzie najwyższy wynik uzyskał model dla parametrów \emph{min\_cluster\_size=200} oraz \emph{min\_samples=100}.
 		Uzyskał on prawie tak wysoki wynik, jak pozostałe modele dla parametrów \emph{min\_cluster\_size=100} oraz \emph{min\_samples=1}.
-		Proces ten pozwolił wektorom tf-idf na osiągnięcie lepszych wyników niż jakiekolwiek inne analizowane metody (rys.~\ref{fig:avg_scores}, zakres dla \emph{min\_cluster\_size=200}).
+		Proces ten pozwolił wektorom tf-idf na osiągnięcie lepszych uśrednionych wyników niż jakiekolwiek inne analizowane metody (rys.~\ref{fig:avg_scores}, zakres dla \emph{min\_cluster\_size=200}).
+
+		Tak drastyczna redukcja tematów wiąże się jednak z innym problemem.
+		Ze względu na wysoką specyficzność tematów wygenerowanych przez tfidf, grupy powstałe przez połączenie mniejszych grup nie zawsze są spójne.
+		Relację tę dobrze ukazuje metryka \(C_{UMass}\) (Rys.~\ref{fig:umass_score}).
+		Metryka ta mierzy współwystępowanie słów z reprezentacji tematu we wszystkich dokumentach grupy.
+		Oba modele \emph{tfidf} osiągają znacznie gorszy wynik od pozostałych, co wskazuje na dużą heterogeniczność zgrupowanych dokumentów.
 
 		Zgodnie z oczekiwaniami, wstępne przetworzenie danych poprzez lematyzację przyniosło wymierne polepszenie wyników.
 		Średni wynik dla wszystkich parametrów wzrósł z \(0.58\) do \(0.62\),
 			podczas gdy wynik dla najlepszych parametrów (modele o indeksach odpowiednio 376 i 457 w tabeli z wynikami) wzrósł z \(0.71\) do \(0.75\).
 		Najlepszy wynik uzyskany metodą inną niż tfidf wyniósł \(0.68\) uzyskany ex aequo przez modele \emph{sbert-lexrank-weighted} (indeks 118) oraz \emph{use-default} (indeks 443).
 		Przewaga jest więc istotna i widoczna w wynikach.
-		\todo{Opisać jakieś minusy}
 		
 	\subsection{Universal Sentence Encoder}
 		Wariant USE testowany w pracy zbudowany jest na konwolucyjnych sieciach neuronowych.
@@ -155,3 +160,17 @@
 		dlatego metryka ta również nie jest idealnym odwzorowaniem jakości tematów.
 	
 \section{Omówienie wyników poszczególnych metryk}
+	Ze względu na naturę nienadzorowanych problemów, żadna metryka nie odzwierciedla w pełni właściwości wyników.
+	Każda metryka jest jedynie przybliżeniem i oceną pewnych aspektów rezultatu, jednak nie może być traktowana jako uniwersalna prawda.
+	W kolejnych częściach przedstawione zostaną wyniki poszczególnych metryk oraz jakie wiążą się z nimi wady.
+
+	Wyniki pomiarów metryką \(C_{UMass}\) przedstawiona została na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
+	Wykres przedstawia ograniczony zakres parametrów (stałe \emph{n\_neighbors} równe 15), jednak podobne zależności występują dla pozostałych wartości parametru.
+	Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak należy patrzeć na niego przez pryzmat liczby nieprzypisanych dokumentów.
+	Model ten dla przedstawionego zakresu jako szum zaklasyfikował od 185 do 205 tysięcy wypowiedzi.
+	Naturalną konsekwencją małej liczby dokumentów w grupach jest ich wysoka spójność, co skutkuje wysokim wynikiem \(C_{UMass}\).
+	Ważnym fragmentem wykresu są wyniki modeli \emph{tfidf} i \emph{tfidf-spacy}.
+	Są one znacznie gorsze od pozostałych, co wytłumaczone zostało w podrozdziale~\ref{sec:tfidf_summary}.
+	Weryfikacja spójności dokumentów w grupie sprawia, że metryka należycie porównuje wygenerowane tematy.
+
+	
