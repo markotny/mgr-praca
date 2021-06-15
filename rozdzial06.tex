@@ -162,7 +162,7 @@
 	Porównując reprezentacje tematów obu typów modeli dla tego samego wyniku \(C_{UMass}\) wciąż widoczna jest duża różnica w jakości,
 		dlatego metryka ta również nie jest idealnym odwzorowaniem jakości tematów.
 	
-\section{Omówienie wyników poszczególnych metryk}
+\section{Omówienie wyników dla poszczególnych metryk}
 	Ze względu na naturę nienadzorowanych problemów, żadna metryka nie odzwierciedla w pełni właściwości wyników.
 	Każda metryka jest jedynie przybliżeniem i oceną pewnych aspektów rezultatu, jednak nie może być traktowana jako uniwersalna prawda.
 	W kolejnych częściach przedstawione zostaną wyniki poszczególnych metryk oraz jakie wiążą się z nimi wady.
@@ -194,29 +194,68 @@
 		\end{tabular}			
 	\end{table}
 
-	Wyniki pomiarów metryką \(C_{UMass}\) przedstawione zostały na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
-	Wykres przedstawia ograniczony zakres parametrów (stałe \emph{n\_neighbors} równe 15), jednak podobne zależności występują dla pozostałych wartości parametru.
-	Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak jak opisano w rozdziale~\ref{sec:sbert_summary},
-		model ten generuje bardzo ogólne wektory, ponieważ analizuje jedynie początki wypowiedzi.
-	Metryka \(C_{UMass}\) bada współwystępowanie słów tematu w klastrach, co w naturalny sposób promuje ogólne tematy,
-		takie jak te generowane przez model \emph{sbert-default}.
-	Ważnym fragmentem wykresu są wyniki modeli \emph{tfidf} i \emph{tfidf-spacy}.
-	Są one znacznie gorsze od pozostałych, co wytłumaczone zostało w podrozdziale~\ref{sec:tfidf_summary}.
-	Pozostałe metody osiągnęły podobne wyniki.
-	
-	Na wykresie widoczna jest również korelacja metryki \(C_{UMass}\) z parametrem \emph{min\_cluster\_size}, która wynosi \(0.662\) (tabela~\ref{tab:corr}).
-	Wraz ze wzrostem minimalnego rozmiaru grupy, maleje liczba tematów, a ich rozmiar rośnie.
-	Zwiększa się też zatem ich zróżnicowanie, przez co tematy stają się bardziej ogólne.
-	Coraz lepszy wynik wraz ze wzrostem minimalnego rozmiaru grupy jest więc prawdopodobnie spowodowany tym samym czynnikiem,
-		co niespodziewany wysoki wynik modelu \emph{sbert-default}.
+	\subsection{Spójność reprezentacji tematów}
+		Wyniki testów metryką \(C_{UMass}\) przedstawione zostały na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
+		Wykres przedstawia dane dla ograniczonego zakresu parametrów (stałe \emph{n\_neighbors} równe 15), jednak podobne zależności występują dla pozostałych wartości parametru.
+		Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak jak opisano w rozdziale~\ref{sec:sbert_summary},
+			model ten generuje bardzo ogólne wektory, ponieważ analizuje jedynie początki wypowiedzi.
+		Metryka \(C_{UMass}\) bada współwystępowanie słów tematu w klastrach, co w naturalny sposób promuje ogólne tematy,
+			takie jak te generowane przez model \emph{sbert-default}.
+		Ważnym fragmentem wykresu są wyniki modeli \emph{tfidf} i \emph{tfidf-spacy}.
+		Są one znacznie gorsze od pozostałych, co wytłumaczone zostało w podrozdziale~\ref{sec:tfidf_summary}.
+		Pozostałe metody osiągnęły podobne wyniki.
+		
+		Na wykresie widoczna jest również korelacja metryki z parametrem \emph{min\_cluster\_size}, która wynosi \(0.662\) (tabela~\ref{tab:corr}).
+		Wraz ze wzrostem minimalnego rozmiaru grupy, maleje liczba tematów, a ich rozmiar rośnie.
+		Zwiększa się też zatem ich zróżnicowanie, przez co tematy stają się bardziej ogólne.
+		Coraz lepszy wynik wraz ze wzrostem minimalnego rozmiaru grupy jest więc prawdopodobnie spowodowany tym samym czynnikiem,
+			co niespodziewany wysoki wynik modelu \emph{sbert-default}.
 
-	Metryka \(C_{NPMI}\), podobnie jak \(C_{UMass}\) bada spójność reprezentacji tematu w kontekście zawartości dokumentów z klastra.
-	Te wyniki prezentują się zgoła odmiennie.
-	Model \emph{sbert-default} zgodnie z oczekiwaniami osiąga tym razem najgorsze wyniki.
-	Najwyższe wyniki osiągnięte zostały przez modele bazujące na tf-idf.
-	Kolejnym najlepszym algorytmem odstającym od reszty okazał się \emph{use-tf-idf-weighted}.
-	Jest to o tyle ciekawe, że te wektory osiągały gorsze wyniki od pozostałych we wszystkich innych testach.
+		Metryka \(C_{NPMI}\), podobnie jak \(C_{UMass}\) bada spójność reprezentacji tematu w kontekście zawartości dokumentów z klastra.
+		Te wyniki prezentują się zgoła odmiennie.
+		Model \emph{sbert-default} zgodnie z oczekiwaniami osiąga tym razem najgorsze wyniki.
+		Najwyższe wyniki osiągnięte zostały przez modele bazujące na tf-idf.
+		Kolejnym najlepszym algorytmem odstającym od reszty okazał się \emph{use-tf-idf-weighted}.
+		Jest to o tyle ciekawe, że te wektory osiągały gorsze wyniki od pozostałych we wszystkich innych testach.
 
-\section{Problemy z wykorzystywanymi metrykami}
-	Algorytmy wykorzystane do oceny modeli posiadają wiele wad.
-	Jedną z nich 
+		Różnica w wynikach pomiędzy \(C_{UMass}\), a \(C_{NPMI}\) oraz ujemna korelacja między nimi podkreśla fakt, że algorytmy te są jedynie pośrednim przybliżeniem spójności tematów.
+		Jedyną metodą dającą pewność co do wyników, jest manualna weryfikacja przez człowieka.
+		Ze względu na ograniczone zasoby metoda ta nie mogła jednak zostać zastosowana w tej pracy.
+
+	\subsection{Spójność rozkładu tematów}
+		Algorytm oznaczony jako \(s_c\) bada, czy przyporządkowanie tematów jest spójne ze strukturą przebiegu posiedzeń plenarnych sejmu.
+		Na wykresie~\ref{fig:consistency_score} można zauważyć, iż metryka ta jest mniej zależna od wybranych parametrów.
+		Dla niskich wartości \emph{n\_neighbors}, które skutkują dużą liczbą tematów, otrzymano znacznie gorsze wyniki.
+		Jednak już od \emph{n\_neighbors} równego 10, wyniki dla większości modeli ustabilizowały się.
+		Jedynie modele oparte o tfidf lekko poprawiały swoje wyniki do samego końca, co jest spójne z obserwacjami w pozostałych testach.
+
+		Najwyższe wyniki osiągnął model \emph{tfidf-spacy}, który operuje na danych poddanych lematyzacji.
+		Warte uwagi jest to, że najwyższy wynik nie został osiągnięty przez model, który przyporządkował najwięcej dokumentów.
+		Oznacza to, że metryka jest w pewnym stopniu odporna na modele tworzące zbyt ogólne tematy poprzez niską dokładność.
+		Niemniej macierz korelacji wskazuje na istniejącą korelację pomiędzy wynikami \(s_c\), a \(s_f\), która wyniosła \(0.426\).
+		Nie jest to jednak wystarczająco wysoka wartość by stwierdzić, że wartości te są od siebie zależne.
+
+		Patrząc na tabelę z wynikami, modele, które wykryły od kilku do kilkunastu tematów, zgodnie z oczekiwaniami osiągnęły bardzo wysoki wynik w tej mierze.
+		Należy mieć to na uwadze, że miara ta nie może posłużyć do oceny takich modeli.
+		To samo tyczy się również poprzednich dwóch miar, gdzie dla \(C_{UMass}\) modele te zbliżyły się do wartości równej 0 (najlepszy możliwy wynik),
+			a dla \(C_{NPMI}\) osiągały wyniki dwu-trzykrotnie lepsze niż najlepsze poprawne modele.
+
+	\subsection{Pozostałe}
+		Metryka związana z liczbą przyporządkowanych dokumentów przyniosła spodziewane rezultaty.
+		Im bardziej ogólny jest model, tym lepszy uzyskał wynik.
+		Jest to bardzo prosta metoda i sama w sobie nie może stanowić żadnej oceny wartości modeli.
+		Została jednak uwzględniona jako składowa oceny uśredniającej wyniki, ponieważ jest to istotna informacja o uzyskanych klastrach.
+		Jeśli model przyporządkuje małą liczbę dokumentów, to miara taka jak \(C_{UMass}\) uzna uzyskane grupowania za spójne i przypisze odpowiednio wysoki wynik.
+		Miara ta pełni więc rolę filtra, który ma za zadanie obniżać wyniki tych modeli, które pominęły zbyt dużą liczbę dokumentów (przykładowo \emph{sbert-default}).
+		Najlepsze wyniki ponownie osiągnęły modele bazujące na tfidf, co również było spodziewane ze względu na ich ograniczoną dokładność.
+
+		Analiza liczby odnalezionych tematów pełni podobną rolę.
+		Modele, które odnajdują zbyt dużą liczbę tematów (\emph{tfidf, tfidf-spacy}) zawdzięczają wysokie wyniki dużej liczbie grup.
+		Dzięki znormalizowaniu liczby odnalezionych tematów, możliwa jest ocena danego modelu pod tym kątem.
+		Zarówno modele odnajdujące za mało tematów (np.~modele \emph{sbert} oraz \emph{use} dla \emph{min\_cluster\_size=200}) otrzymują niski wynik.
+		Analogicznie modele, które wykryły za dużo tematów, otrzymują równie niski wynik.
+		Zależność ta przedstawiona została na rysunku~\ref{fig:topic_counts}.
+		
+		Warto zauważyć, iż modele oparte na \emph{tfidf} osiągnęły wysokie wyniki w obu omawianych wynikach dla parametru \emph{min\_cluster\_size=200}.
+		Pozostałe metody dla tak wysokiej minimalnej liczby tematów osiągały gorsze wyniki niż dla mniejszych wartości.
+		W połączeniu z najwyższymi wynikami we wszystkich pozostałych metrykach oprócz \(C_{UMass}\), pozwoliło to na zajęcie najwyższych miejsc w rankingu.
