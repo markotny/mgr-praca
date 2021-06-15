@@ -14,7 +14,7 @@
 	W pierwszej kolejności porównane zostaną wyniki pod kątem metod utworzenia wektorów wypowiedzi.
 	Wyniki omawiane są zgodnie z kolejnością występowania w tabeli z wynikami zamieszczonej w rozdziale~\ref{sec:all_scores}.
 
-	\subsection{Sentence Transformers}
+	\subsection{Sentence Transformers}\label{sec:sbert_summary}
 		Wektory wygenerowane przez modele SBERT oparte na transformerach są w stanie generować bardzo dobre wyniki,
 			ale wymagana jest analiza poszczególnych zdań, a nie całych wypowiedzi.
 		Jak pokazują wyniki uzyskane przez model \emph{sbert-default} (wiersze 0--83 tabeli z wynikami),
@@ -105,7 +105,7 @@
 		Jeśli więc już wystąpią jakieś wspólne słowa, to powstałe wektory będą blisko siebie w przestrzeni.
 		Należy więc oczekiwać, że wektory wygenerowane w ten sposób będą zawierać wiele grup silnie skoncentrowanych.
 		
-		Jak się jednak okazuje, odpowiednio skonfigurowany algorytm HDBSCAN potrafi sobie poradzić również z takimi przestrzeniami.
+		Jak się jednak okazuje, odpowiednio skonfigurowany algorytm grupowania HDBSCAN potrafi sobie poradzić również z wektorami w takich przestrzeniach.
 		Wraz ze wzrostem wartości parametru \emph{min\_cluster\_size}, powstrzymujemy algorytm przed rozbiciem klastrów na pomniejsze grupy
 			(podczas etapu kondensowania hierarchii grup opisanego w rozdziale~\ref{sec:hdbscan}).
 		W ten sposób możliwa jest redukcja liczby tematów z prawie 1800 (dla \emph{min\_cluster\_size=5}) do mniej niż 200 (dla \emph{min\_cluster\_size=200}).
@@ -117,7 +117,10 @@
 		Ze względu na wysoką specyficzność tematów wygenerowanych przez tfidf, grupy powstałe przez połączenie mniejszych grup nie zawsze są spójne.
 		Relację tę dobrze ukazuje metryka \(C_{UMass}\) (Rys.~\ref{fig:umass_score}).
 		Metryka ta mierzy współwystępowanie słów z reprezentacji tematu we wszystkich dokumentach grupy.
-		Oba modele \emph{tfidf} osiągają znacznie gorszy wynik od pozostałych, co wskazuje na dużą heterogeniczność zgrupowanych dokumentów.
+		Oba modele \emph{tfidf} osiągają znacznie gorszy wynik od pozostałych, co wskazuje na duże zróżnicowanie zgrupowanych dokumentów.
+		Oznacza to, że wysoki wynik osiągany przez modele \(tfidf\) nie wynika z większej dokładności w wykrywaniu zależności między wypowiedziami.
+		Przeciwnie, jest to oznaka mniejszej dokładności modelu, który w mniejszym stopniu wykrywa różnice między dokumentami.
+		W tym kontekście nie jest zaskakującym wysoki wynik modeli zmierzony pozostałymi metrykami.
 
 		Zgodnie z oczekiwaniami, wstępne przetworzenie danych poprzez lematyzację przyniosło wymierne polepszenie wyników.
 		Średni wynik dla wszystkich parametrów wzrósł z \(0.58\) do \(0.62\),
@@ -131,7 +134,7 @@
 		Tak też było w tym przypadku.
 		Ciekawą różnicą w stosunku do modeli opartych o SBERT, wektory wygenerowane przez USE dawały najlepsze wyniki dla modeli analizujących bezpośrednio całą wypowiedź (\emph{use-default}).
 		Oznacza to, że model USE dużo lepiej radzi sobie z długimi zdaniami.
-		Różnica ta obrazuje, na jak krótkich zdaniach wytrenowany został model SBERT.
+		Różnica ta obrazuje, na jak krótkich zdaniach wytrenowany został model SBERT\@.
 		Pomimo większego limitu wejścia tych modeli (512 tokenów), model operujący na całych wypowiedziach (\emph{sbert-default}) osiągał najsłabsze wyniki.
 		Tymczasem model USE najlepsze wyniki osiągał na całych wypowiedziach pomimo bardziej ograniczającego limitu 256 tokenów.
 		Wysoka dokładność USE może też być efektem znanego zjawiska (zwykle w kontekście artykułów czy wiadomości),
@@ -164,13 +167,56 @@
 	Każda metryka jest jedynie przybliżeniem i oceną pewnych aspektów rezultatu, jednak nie może być traktowana jako uniwersalna prawda.
 	W kolejnych częściach przedstawione zostaną wyniki poszczególnych metryk oraz jakie wiążą się z nimi wady.
 
-	Wyniki pomiarów metryką \(C_{UMass}\) przedstawiona została na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
+	Tabela~\ref{tab:corr} przedstawia macierz korelacji Pearsona między wykorzystywanymi parametrami oraz metrykami.
+	Nie zauważono dużej korelacji między wykorzystywanymi metrykami co oznacza,
+		że wyciąganie z nich średniej arytmetycznej nie powinno faworyzować poszczególnych aspektów analizowanych danych.
+	Jedyna istotna korelacja (\(>0.5\)) wystąpiła pomiędzy metrykami \(U_{MAss}\) oraz \(c_{NPMI}\).
+	Jest to odwrotna korelacja (\(-0.801\)), co sugeruje, że metryki te zupełnie inaczej oceniają spójność wykrytych tematów.
+
+	\begin{table}[htb]
+		\caption{Macierz korelacji Pearsona dla parametrów oraz metryk}\label{tab:corr}
+		\centering
+		\small
+		\begin{tabular}{c|rrrrrrrrr}	% chktex 44
+			\toprule
+			{} &  \rotatebox[origin=c]{90}{\emph{n\_neighbors}} & \rotatebox[origin=c]{90}{\emph{min\_cluster\_size}} & \rotatebox[origin=c]{90}{\emph{min\_samples}} & \rotatebox[origin=c]{90}{\(C_{UMass}\)} & \rotatebox[origin=c]{90}{\(C_{NPMI}\)} & \rotatebox[origin=c]{90}{\(s_c\)} & \rotatebox[origin=c]{90}{\(s_f\)} & \rotatebox[origin=c]{90}{\(s_T\)} & \rotatebox[origin=c]{90}{\(avg\)} \\
+			\midrule
+			\emph{n\_neighbors}					&  1.000 &  0.006 &  0.004 &  0.111 &  0.018 &  0.054 & -0.187 &  0.102 &  0.071 \\
+			\emph{min\_cluster\_size}		&  0.006 &  1.000 &  0.469 &  0.662 & -0.557 &  0.108 &  0.506 &  0.381 &  0.514 \\
+			\emph{min\_samples}					&  0.004 &  0.469 &  1.000 &  0.446 & -0.260 &  0.043 &  0.293 &  0.120 &  0.289 \\
+			\(C_{UMass}\)								&  0.111 &  0.662 &  0.446 &  1.000 & -0.801 & -0.216 &  0.065 &  0.491 &  0.280 \\
+			\(C_{NPMI}\)								&  0.018 & -0.557 & -0.260 & -0.801 &  1.000 &  0.346 &  0.166 & -0.380 &  0.098 \\
+			\(s_c\)											&  0.054 &  0.108 &  0.043 & -0.216 &  0.346 &  1.000 &  0.426 & -0.088 &  0.626 \\
+			\(s_f\)											& -0.187 &  0.506 &  0.293 &  0.065 &  0.166 &  0.426 &  1.000 & -0.001 &  0.686 \\
+			\(s_T\)											&  0.102 &  0.381 &  0.120 &  0.491 & -0.380 & -0.088 & -0.001 &  1.000 &  0.536 \\
+			\(avg\)											&  0.071 &  0.514 &  0.289 &  0.280 &  0.098 &  0.626 &  0.686 &  0.536 &  1.000 \\
+			\bottomrule
+		\end{tabular}			
+	\end{table}
+
+	Wyniki pomiarów metryką \(C_{UMass}\) przedstawione zostały na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
 	Wykres przedstawia ograniczony zakres parametrów (stałe \emph{n\_neighbors} równe 15), jednak podobne zależności występują dla pozostałych wartości parametru.
-	Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak należy patrzeć na niego przez pryzmat liczby nieprzypisanych dokumentów.
-	Model ten dla przedstawionego zakresu jako szum zaklasyfikował od 185 do 205 tysięcy wypowiedzi.
-	Naturalną konsekwencją małej liczby dokumentów w grupach jest ich wysoka spójność, co skutkuje wysokim wynikiem \(C_{UMass}\).
+	Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak jak opisano w rozdziale~\ref{sec:sbert_summary},
+		model ten generuje bardzo ogólne wektory, ponieważ analizuje jedynie początki wypowiedzi.
+	Metryka \(C_{UMass}\) bada współwystępowanie słów tematu w klastrach, co w naturalny sposób promuje ogólne tematy,
+		takie jak te generowane przez model \emph{sbert-default}.
 	Ważnym fragmentem wykresu są wyniki modeli \emph{tfidf} i \emph{tfidf-spacy}.
 	Są one znacznie gorsze od pozostałych, co wytłumaczone zostało w podrozdziale~\ref{sec:tfidf_summary}.
-	Weryfikacja spójności dokumentów w grupie sprawia, że metryka należycie porównuje wygenerowane tematy.
-
+	Pozostałe metody osiągnęły podobne wyniki.
 	
+	Na wykresie widoczna jest również korelacja metryki \(C_{UMass}\) z parametrem \emph{min\_cluster\_size}, która wynosi \(0.662\) (tabela~\ref{tab:corr}).
+	Wraz ze wzrostem minimalnego rozmiaru grupy, maleje liczba tematów, a ich rozmiar rośnie.
+	Zwiększa się też zatem ich zróżnicowanie, przez co tematy stają się bardziej ogólne.
+	Coraz lepszy wynik wraz ze wzrostem minimalnego rozmiaru grupy jest więc prawdopodobnie spowodowany tym samym czynnikiem,
+		co niespodziewany wysoki wynik modelu \emph{sbert-default}.
+
+	Metryka \(C_{NPMI}\), podobnie jak \(C_{UMass}\) bada spójność reprezentacji tematu w kontekście zawartości dokumentów z klastra.
+	Te wyniki prezentują się zgoła odmiennie.
+	Model \emph{sbert-default} zgodnie z oczekiwaniami osiąga tym razem najgorsze wyniki.
+	Najwyższe wyniki osiągnięte zostały przez modele bazujące na tf-idf.
+	Kolejnym najlepszym algorytmem odstającym od reszty okazał się \emph{use-tf-idf-weighted}.
+	Jest to o tyle ciekawe, że te wektory osiągały gorsze wyniki od pozostałych we wszystkich innych testach.
+
+\section{Problemy z wykorzystywanymi metrykami}
+	Algorytmy wykorzystane do oceny modeli posiadają wiele wad.
+	Jedną z nich 
