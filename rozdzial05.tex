@@ -23,6 +23,15 @@
 	Jeśli para słów często występuje razem w dokumentach, to są one powiązane.
 	Można więc określić spójność całej reprezentacji tematu badając wszystkie w niej zawarte pary słów.
 	Miara ta porównana została z wynikami zadania podmiany słowa i uzyskała ona lepszą korelację z ocenami ludzi.
+	Liczona jest według następującego wzoru:
+	\[ C_{UMass} = \frac{2}{N\cdot (N-1)} \sum_{i=2}^N \sum_{j=1}^{i-1} \log\frac{D\left(w_i^{(t)}, w_j^{(t)}\right) + 1}{D\left(w_j^{(t)}\right)} \]
+	gdzie:
+	\begin{itemize}
+		\item \(W^{(t)} = \left(w_1^{(t)}, \ldots, w_N^{(t)}\right)\) lista \(N\) słów (tokenów) najlepiej opisujących temat \(t\),
+		\item \(D(w)\) częstość występowania tokenu \(w\),
+		\item \(D(w_i, w_j)\) częstość współwystępowania tokenów \(w_i\) i \(w_j\) (liczba dokumentów, w których pojawiły się oba tokeny)
+	\end{itemize}
+
 	Wykres dla \emph{n\_neighbors} równego 15 przedstawiony został na rys.~\ref{fig:umass_score}.
 	Format parametrów na osi x na tym wykresie i wszystkich kolejnych jest następujący: <n\_neighbors>: <min\_cluster\_size>, <min\_samples>.
 
@@ -36,8 +45,8 @@
 	Wektory te są obliczane na podstawie współwystępujących słów w kontekście analizowanego słowa.
 	Kontekst jest definiowany jako tzw.\ przesuwne okno (ang.\ \emph{sliding window}) zwierające \(\pm 5\) otaczających słów.
 	Następnie wektory są ważone algorytmem NPMI (ang.\ \emph{Normalized Point Mutual Information}).
-	Algorytm ten bazuje na PMI:
-	\[PMI(w_i,w_j) = \log_2 \frac{p(w_i,w_j)}{p(w_i)p(w_j)}\]
+	Algorytm ten bazuje na PMI\@:
+	\[ PMI(w_i,w_j) = \log \frac{p(w_i,w_j)}{p(w_i)p(w_j)} \]
 	gdzie:
 	\begin{itemize}
 		\item \(p(w_i,w_j)\) prawdopodobieństwo współwystąpienia słów \(w_i\) i \(w_j\),
@@ -50,12 +59,17 @@
 	Wynik wyższy od 0 oznacza większe niż losowe prawdopodobieństwo odnalezienia danych dwóch słów razem,
 		podczas gdy wartość poniżej zera oznacza prawdopodobieństwo niższe niż losowe (czyli częściej spotkamy tylko jedno ze słów, niż oba).
 
-	Wariant NPMI normalizuje wynik PMI tak, aby mieścił się w zakresie [-1, 1]:
-	\[NPMI(w_i,w_j) = \frac{PMI(w_i,w_j)}{-\log(p(w_i,w_j))}\]
+	Wariant NPMI normalizuje wynik PMI tak, aby mieścił się w zakresie [-1, 1] i ta wartość wykorzystywana jest jako \emph{j}-ty element wektora kontekstowego \(v_i\):
+	\[ v_{ij} = NPMI(w_i,w_j) = \frac{PMI(w_i,w_j)}{-\log(p(w_i,w_j))} \]
 	gdzie wartość 1 oznacza pełne współwystępowanie (\(p(w_i,w_j)=p(w_i)=p(w_j)\), czyli słowa nigdy nie występują osobno.
 	Wartość -1 oznacza brak współwystępowania (słowa nigdy nie występują razem), a wartość 0 oznacza, że współwystępowanie słów jest losowe.
-
-	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami ważonych wektorów kontekstowych słów tematu.
+	
+	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami ważonych wektorów kontekstowych słów tematu:
+	\[ C_{NPMI} = \frac{2}{N\cdot (N-1)} \sum_{i=2}^N \sum_{j=1}^{i-1} Sim(v_i,v_j) \]
+	gdzie:
+	\begin{itemize}
+		\item \(Sim(v_i,v_j)\) metryka podobieństwa między wektorami kontekstowymi \(v_i\) i \(v_j\) słów \(w_i\) i \(w_j\) (podobieństwo kosinusowe).
+	\end{itemize}
 	Wykres dla \emph{n\_neighbors} równego 15 przedstawiony został na rys.~\ref{fig:npmi_score}.
 
 	\begin{figure}[htb]
@@ -137,7 +151,7 @@ return score
 \section{Końcowa ocena}
 	Powyższe metody nie poddają ocenie samej liczby tematów i liczby nieprzyporządkowanych dokumentów.
 	Z tego powodu, wysoki wynik mógłby osiągnąć model, który znalazłby zaledwie 5 tematów.
-	Takie przypadki można znaleźć w tabeli z wynikami (rozdział~\ref{sec:all_scores}) dla modeli \emph{sbert-default}.
+	Takie przypadki można znaleźć w tabeli z wynikami (dodatek~\ref{sec:all_scores}) dla modeli \emph{sbert-default}.
 	Taki model przyporządkuje wszystkie dokumenty generując bardzo ogólne tematy.
 	Podobnie wysoki wynik osiągnie model, który wygeneruje tysiące bardzo szczegółowych tematów.
 	Takie modele można odfiltrować definiując odpowiednie progi, jednak taka metoda wymusza ustanowienie założeń,

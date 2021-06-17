@@ -1,18 +1,14 @@
 % !TeX root = ./Dyplom.tex
 
 \chapter{Analiza wyników}
-	Szczegółowe wyniki zostały przedstawione w rozdziale~\ref{sec:all_scores}.
-	W tabeli zawarte są wszystkie metody, dla których wykonane zostały pełne testy (jak opisano w rozdziale~\ref{sec:test_plan}).
-	W kolumnach przedstawiono kolejno parametry testów, liczbę znalezionych tematów i liczbę nieprzypisanych dokumentów, wyniki testów oraz wynik uśredniony.
-	Jeśli dla danych parametrów liczba tematów była poza zakresem [50--1000], to niektóre testy były pomijane w celach optymalizacyjnych.
-	Wtedy w kolumnach wpisana jest wartość ,,<NA>''.
-
+	Szczegółowe wyniki zostały przedstawione w dodatku~\ref{sec:all_scores}.
 	Wykres przedstawiony na rysunku~\ref{fig:avg_scores} ilustruje końcowe uśrednione wyniki.
-	W kolejnych rozdziałach omówione są te wyniki z podziałem na poszczególne modele.
+	W kolejnych rozdziałach omówione są te wyniki z podziałem na poszczególne modele,
+		a następnie na poszczególne metryki.
 
 \section{Porównanie metod generowania wektorów}
 	W pierwszej kolejności porównane zostaną wyniki pod kątem metod utworzenia wektorów wypowiedzi.
-	Wyniki omawiane są zgodnie z kolejnością występowania w tabeli z wynikami zamieszczonej w rozdziale~\ref{sec:all_scores}.
+	Wyniki omawiane są zgodnie z kolejnością występowania w tabeli z wynikami zamieszczonej w dodatku~\ref{sec:all_scores}.
 
 	\subsection{Sentence Transformers}\label{sec:sbert_summary}
 		Wektory wygenerowane przez modele SBERT oparte na transformerach są w stanie generować bardzo dobre wyniki,
@@ -195,7 +191,7 @@
 	\end{table}
 
 	\subsection{Spójność reprezentacji tematów}
-		Wyniki testów metryką \(C_{UMass}\) przedstawione zostały na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w rozdziale~\ref{sec:all_scores}.
+		Wyniki testów metryką \(C_{UMass}\) przedstawione zostały na rysunku~\ref{fig:umass_score} oraz w tabeli z wynikami w dodatku~\ref{sec:all_scores}.
 		Wykres przedstawia dane dla ograniczonego zakresu parametrów (stałe \emph{n\_neighbors} równe 15), jednak podobne zależności występują dla pozostałych wartości parametru.
 		Zaskakującym może się wydawać dobry wynik \emph{sbert-default}, jednak jak opisano w rozdziale~\ref{sec:sbert_summary},
 			model ten generuje bardzo ogólne wektory, ponieważ analizuje jedynie początki wypowiedzi.
