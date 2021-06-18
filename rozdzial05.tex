@@ -66,10 +66,7 @@
 	
 	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami ważonych wektorów kontekstowych słów tematu:
 	\[ C_{NPMI} = \frac{2}{N\cdot (N-1)} \sum_{i=2}^N \sum_{j=1}^{i-1} Sim(v_i,v_j) \]
-	gdzie:
-	\begin{itemize}
-		\item \(Sim(v_i,v_j)\) metryka podobieństwa między wektorami kontekstowymi \(v_i\) i \(v_j\) słów \(w_i\) i \(w_j\) (podobieństwo kosinusowe).
-	\end{itemize}
+	gdzie \(Sim(v_i,v_j)\) metryka podobieństwa między wektorami kontekstowymi \(v_i\) i \(v_j\) słów \(w_i\) i \(w_j\) (podobieństwo kosinusowe).
 	Wykres dla \emph{n\_neighbors} równego 15 przedstawiony został na rys.~\ref{fig:npmi_score}.
 
 	\begin{figure}[htb]
