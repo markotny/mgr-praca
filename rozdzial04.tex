@@ -61,8 +61,6 @@
 	Dla niskich wartości koncentruje się na lokalnej strukturze nie biorąc pod uwagę pełnego obrazu danych.
 	Wysokie wartości skutkują utratą szczegółów, ukazując bardziej ogólne zależności.
 	Wpływ tego parametru zobrazowany został na rysunku~\ref{fig:umap} dla wartości 5, 15 oraz 100.
-	W celu wizualizacji dane zredukowane zostały do dwóch wymiarów,
-		a kolory odpowiadają klastrom wykrytym przez HDBSCAN (dla minimalnego rozmiaru klastra równego 100).
 	Dla niskiej wartości parametru \verb|n_neighbors| powstało wiele lokalnych grup o niskiej liczebności.
 	Wraz ze wzrostem wartości parametru lokalne grupy łączą się w coraz większe klastry.
 
@@ -83,7 +81,8 @@
 			\includegraphics[width=\linewidth]{rys04/umap_100_100_100.png}
 			n\_neighbors = 100
 		\end{minipage}
-		\caption{Dwuwymiarowa reprezentacja danych przez UMAP w zależności od wartości parametru n\_neighbors}\label{fig:umap}
+		\caption[Dwuwymiarowa reprezentacja danych przez UMAP]{Dwuwymiarowa reprezentacja danych przez UMAP w zależności od wartości parametru n\_neighbors.
+			Kolory odpowiadają klastrom wykrytym przez HDBSCAN (dla minimalnego rozmiaru klastra równego 100).}\label{fig:umap}
 	\end{figure}
 	
 
@@ -93,10 +92,10 @@
 	Z klastrów wykrytych na wszystkich danych wylosowano pięć, a z każdego z nich wylosowano dziesięć wektorów.
 	Dodatkowo, wybrano dziesięć losowych wektorów bez przypisanego klastra.
 	W ten sposób otrzymano 60 dokumentów, które poddano ponownej analizie HDBSCAN
-		(wykorzystując wektory uzyskane z redukcji wymiarów wszystkich dokumentów do 5).
+		(wykorzystując wektory uzyskane z redukcji wymiarów wszystkich dokumentów do pięciu).
 	
 	Algorytm określa klastry jako rejony o większej gęstości otoczone rzadziej rozmieszczonymi punktami.
-	Aby określenia gęstości używana jest metryka odległości do najbliższego \emph{k}-tego sąsiada oznaczona dalej jako \(core_k(x)\).
+	Aby określić gęstość używana jest metryka odległości do najbliższego \emph{k}-tego sąsiada oznaczona dalej jako \(core_k(x)\).
 	Na jej podstawie stworzono metrykę określającą odległość wzajemnej osiągalności (ang.\ \emph{mutual reachability distance}):
 	\[ d_k(a,b) = \max \left\lbrace core_k(a),core_k(b),d(a,b) \right\rbrace \]
 	gdzie:
@@ -109,15 +108,14 @@
 	Na podstawie obliczonych odległości konstruowane jest minimalne drzewo rozpinające algorytmem Prima.
 	Wierzchołkami grafu są punkty danych, a wagami krawędzi obliczone odległości.
 	Na rys.~\ref{fig:mst} przedstawiono powstałe drzewo dla wyselekcjonowanych danych.
-	Grubość krawędzi i kolor zależy od wartości odległości, gdzie grubsze linie oznaczają mniejszą odległość.
-	Punkty pokolorowane są zgodnie z pierwotnymi klastrami, a na czarno zaznaczone są punkty, które nie miały klastrów.
 	Zgodnie z oczekiwaniami, punkty nieprzypisane pierwotnie do żadnego klastra mają znacznie większe odległości od punktów, które tworzą zbiory.
 	Widać też, że klastry nie nachodzą na siebie, a więc dane są dobrze odseparowane.
 	
 	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=0.5\linewidth]{rys04/hdbscan_mst.png}
-		\caption{Minimalne drzewo rozpinające}\label{fig:mst}
+		\caption[Minimalne drzewo rozpinające]{Minimalne drzewo rozpinające. Grubość krawędzi i kolor zależy od wartości odległości, gdzie grubsze linie oznaczają mniejszą odległość.
+			Punkty pokolorowane są zgodnie z pierwotnymi klastrami, a na czarno zaznaczone są punkty, które nie miały klastrów.}\label{fig:mst}
 	\end{figure}
 	
 	Następnie powstałe krawędzie łączone są w hierarchiczne grupy, poprzez scalanie kolejnych krawędzi o najmniejszej odległości.
@@ -125,10 +123,10 @@
 	Celem algorytmu jest jednak otrzymanie zbioru klastrów, nie hierarchii.
 	W tym celu HDBSCAN kondensuje hierarchię do mniejszego drzewa.
 	Algorytm analizuje hierarchię i podczas każdego podziału sprawdza powstałe dwie grupy.
-	Jeśli obie grupy mają rozmiar większy niż minimalny (minimalny rozmiar klastra to parametr algorytmu),
-		to taki podział jest traktowany jako faktyczne dwie grupy.
+	Jeśli obie grupy mają rozmiar większy niż minimalny (minimalny rozmiar klastra to parametr algorytmu \verb|min_cluster_size|),
+		to taki wynik takiego podziału jest traktowany jako dwie prawdziwe grupy.
 	Jeśli jednak któraś z powstałych grup ma mniejszy rozmiar niż minimalny to uznaje się,
-		że są to punkty wypadające z klastra niestanowiące osobnej grupy i zostawiana jest jedynie większa grupa.
+		że są to punkty wypadające z klastra niestanowiące osobnej grupy i pozostawiana jest jedynie większa grupa.
 	W ten sposób otrzymuje się dużo mniej grup, które wraz ze wzrostem odległości między punktami zmniejszają swój rozmiar.
 	Wynik takiego działania przedstawiony jest na rysunku~\ref{fig:dendrogram}b.
 	
@@ -146,7 +144,7 @@
 				\includegraphics[width=.95\linewidth]{rys04/hdbscan_ct.png}
 			\end{flushright}
 		\end{minipage}
-		\caption{Dendrogramy hierarchii klastrów: a) na podstawie drzewa rozpinającego, b) skondensowane}\label{fig:dendrogram} % chktex 9 chktex 10
+		\caption[Dendrogramy hierarchii klastrów]{Dendrogramy hierarchii klastrów: a) na podstawie drzewa rozpinającego, b) skondensowane}\label{fig:dendrogram} % chktex 9 chktex 10
 	\end{figure}
 
 	Na końcu z powstałego skondensowanego drzewa wybierane są najstabilniejsze klastry.
@@ -170,7 +168,7 @@
 		i domyślnie jego wartość jest równa wartości \verb|min_cluster_size|.
 	Na rysunku~\ref{fig:umap} wartość ta była równa 100.
 	Zmniejszenie wartości \verb|min_samples| do 1 skutkuje wykryciem większej ilości mniejszych grup.
-	Rezultat przedstawiony został na rys.~\ref{fig:hdbscan}a.
+	Rezultat redukcji z takim parametrem przedstawiony został na rys.~\ref{fig:hdbscan}a.
 
 	Rys~\ref{fig:hdbscan}b przedstawia klastry wykryte na pięciowymiarowych wektorach, a następnie zwizualizowane na dwóch.
 	Wykrywanie klastrów w przestrzeni pięciowymiarowej pozwala na dokładniejsze wykrycie zależności między punktami danych,
@@ -187,7 +185,7 @@
 			b)\par\medskip % chktex 10
 			\includegraphics[width=\linewidth]{rys04/umap_15_100_1_5d.png}
 		\end{minipage}
-		\caption{Wykryte klastry na wektorach: a) dwuwymiarowych, b) pięciowymiarowych}\label{fig:hdbscan} % chktex 9 chktex 10
+		\caption[Klastry wykryte przez HDBSCAN]{Klastry wykryte przez HDBSCAN dla \emph{min\_samples} równego 1 na wektorach: a) dwuwymiarowych, b) pięciowymiarowych}\label{fig:hdbscan} % chktex 9 chktex 10
 	\end{figure}
 
 \section{Reprezentacja tematu}
@@ -195,7 +193,7 @@
 	Jednocześnie słowa te powinny być specyficzne dla danego zbioru tak, aby widoczne były różnice między tematami.
 	Jest to problem podobny do wyszukiwania słów identyfikujących dokument algorytmem TF-IDF\@.
 	Tym razem jednak chcemy znaleźć słowa identyfikujące zbiór dokumentów na tle innych zbiorów.
-	Autor BERTopic nazwał tą wariację algorytmu c-TF-IDF (ang.\ \emph{class-based TF-IDF}):
+	Autor BERTopic nazwał tą wariację algorytmu c-TF-IDF\cite{BERTopic} (ang.\ \emph{class-based TF-IDF}):
 	\[c-TF-IDF_i = \frac{t_i}{w_i} \cdot \log \frac{m}{\sum_j^n t_j} \]
 	gdzie:
 	\begin{itemize}
@@ -206,10 +204,10 @@
 	\end{itemize}
 
 	W ten sposób uzyskano ranking wszystkich słów w danej klasie.
-	Na podstawie tego rankingu wybiera się 5--10 słów z najwyższym wynikiem, które stanowią reprezentację tematu.
+	Na podstawie tego rankingu wybiera się od pięciu do dziesięciu słów z najwyższym wynikiem, które stanowią reprezentację tematu.
 	Często zdarza się jednak, że otrzymane słowa będą bardzo podobne.
-	Przykładowe reprezentacje powstałe tą metodą przedstawione zostały w tabeli~\ref{tab:mmr}.
-	Aby zminimalizować liczbę podobnych słów w reprezentacji tematu i jednocześnie zdywersyfikować opis tematu,
+	Przykładowe reprezentacje powstałe tą metodą przedstawione zostały w tabeli~\ref{tab:mmr}a.
+	Aby zminimalizować liczbę podobnych słów w reprezentacji tematu i jednocześnie zdywersyfikować jego opis,
 		w BERTopic zastosowany jest algorytm MMR (ang.\ \emph{Maximal Marginal Relevance})\cite{MMR}:
 	\[MMR = \arg \max_{D_i \in R\backslash S} \left[\lambda\left(Sim_1(D_1, Q) - (1-\lambda) \max_{D_j \in S} Sim_2(D_i, D_j)\right)\right]\]
 	gdzie:
@@ -228,7 +226,7 @@
 	Wartość parametru \(\lambda\) ustawiono na 0 (maksymalna dywersyfikacja).
 	W ten sposób otrzymuje się reprezentacje tematów dużo lepiej opisujące zbiory,
 		co jest szczególnie istotne w języku polskim zawierającym wiele odmian tych samych słów.
-	Tabela~\ref{tab:mmr} przedstawia reprezentacje tematów otrzymane po zastosowaniu MMR\@.
+	Tabela~\ref{tab:mmr}b przedstawia reprezentacje tematów otrzymane po zastosowaniu MMR\@.
 
 	\begin{table}[htb]
 		\caption{Reprezentacje wybranych tematów: a) bez MMR, b) z MMR}\label{tab:mmr} % chktex 9 chktex 10

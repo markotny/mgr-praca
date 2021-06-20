@@ -32,7 +32,7 @@
 	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=.5\textwidth]{rys03/transformer_attention.png}
-		\caption{Mechanizm atencji --- wizualizacja wag poszczególnych słów podczas analizy słowa ,,it''.
+		\caption[Mechanizm atencji — wizualizacja wag]{Mechanizm atencji --- wizualizacja wag poszczególnych słów podczas analizy słowa ,,it''.
 			Źródło: https://jalammar.github.io/illustrated-transformer}\label{fig:attention}
 	\end{figure}
 	
@@ -59,7 +59,7 @@
 	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=0.3\linewidth]{rys03/sbert.png}
-		\caption{Architektura modelu Sentence-BERT\cite{sbert}}\label{fig:sbert}
+		\caption[Architektura modelu Sentence-BERT]{Architektura modelu Sentence-BERT\cite{sbert}}\label{fig:sbert}
 	\end{figure}
 
 	Ze względu na specyfikę potrzebnego korpusu do trenowania modeli SBERT (oznaczone pary zdań) nie istnieją obecnie modele wytrenowane w języku polskim.
@@ -73,7 +73,7 @@
 	\begin{figure}[htb]
 		\centering
 		\includegraphics[width=.75\linewidth]{rys03/sbert_multilingual.png}
-		\caption{Układ modeli nauczyciel-uczeń w procesie uczenia wielojęzykowego SBERT\cite{sbert_multilingual}}\label{fig:sbert_multilingual}
+		\caption[Układ modeli nauczyciel-uczeń w procesie uczenia wielojęzykowego SBERT]{Układ modeli nauczyciel-uczeń w procesie uczenia wielojęzykowego SBERT\cite{sbert_multilingual}}\label{fig:sbert_multilingual}
 	\end{figure}
 	
 	Trenowanie modelu ucznia wymaga par zdań w języku angielskim i języku docelowym.
@@ -137,7 +137,7 @@
 		\begin{figure}[ht]
 			\centering
 			\includegraphics[width=0.5\linewidth]{rys03/lexrank.png}
-			\caption{Graf ważony miarą podobieństwa między zdaniami (wierzchołkami)\cite{LexRank}}\label{fig:lexrank}
+			\caption[Graf ważony miarą podobieństwa między zdaniami]{Graf ważony miarą podobieństwa między zdaniami (wierzchołkami)\cite{LexRank}}\label{fig:lexrank}
 		\end{figure}
 		Graf przedstawiony w postaci macierzy, po znormalizowaniu wierszy, jest macierzą stochastyczną
 			(macierz kwadratowa, w której każdy wiersz sumuje się do wartości 1), którą można potraktować jako łańcuch Markova.
@@ -193,7 +193,7 @@
 				b)\par\medskip % chktex 10
 				\includegraphics[width=\linewidth]{rys03/tfidf_norm.png}
 			\end{minipage}
-			\caption{Suma wartości tf-idf w zależności od liczby wykrytych słów (zakres do 600 słów):
+			\caption[Suma wartości tf-idf w zależności od liczby wykrytych słów]{Suma wartości tf-idf w zależności od liczby wykrytych słów (zakres do 600 słów):
 				a) dane nieznormalizowane z dopasowaną krzywą, b) dane znormalizowane krzywą}\label{fig:tfidf_sent} % chktex 9 chktex 10
 		\end{figure}
 
