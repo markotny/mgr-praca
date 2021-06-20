@@ -210,5 +210,6 @@
 					"w",
 					"wysokowymiarowych",
 					"zwizualizowane"
-				]
+				],
+				"latex-workshop.view.pdf.invertMode.enabled": "never"
 }

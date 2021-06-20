@@ -1,5 +1,4 @@
 % !TeX root = ./Dyplom.tex
-% chktex-file 9
 % chktex-file 21
 
 \chapter{Ocena skuteczności modeli}
@@ -61,7 +60,7 @@
 
 	Wariant NPMI normalizuje wynik PMI tak, aby mieścił się w zakresie [-1, 1] i ta wartość wykorzystywana jest jako \emph{j}-ty element wektora kontekstowego \(v_i\):
 	\[ v_{ij} = NPMI(w_i,w_j) = \frac{PMI(w_i,w_j)}{-\log(p(w_i,w_j))} \]
-	gdzie wartość 1 oznacza pełne współwystępowanie (\(p(w_i,w_j)=p(w_i)=p(w_j)\), czyli słowa nigdy nie występują osobno.
+	gdzie wartość 1 oznacza pełne współwystępowanie (\(p(w_i,w_j)=p(w_i)=p(w_j)\)), czyli słowa nigdy nie występują osobno.
 	Wartość -1 oznacza brak współwystępowania (słowa nigdy nie występują razem), a wartość 0 oznacza, że współwystępowanie słów jest losowe.
 	
 	Końcowa wartość obliczana jest jako średnia odległość kosinusowa między wszystkimi parami ważonych wektorów kontekstowych słów tematu:
@@ -409,6 +408,7 @@ scores['avg'] = np.nanmean(s, axis=1)
 		Oceny liczby przyporządkowanych dokumentów oraz liczby tematów opisane odpowiednio w rozdziałach~\ref{sec:score_not_found},~\ref{sec:score_topic_count}
 			również przeprowadzone zostały na pełnym korpusie.
 
+		% chktex-file 9
 		\begin{table}[htb]
 			\caption{Liczba analizowanych próbek w zależności od liczby wykrytych tematów (mediana)}\label{tab:support}
 			\centering
@@ -431,7 +431,7 @@ scores['avg'] = np.nanmean(s, axis=1)
 		\end{table}
 
 \section{Ewaluacja LDA}\label{sec:lda}
-	Tematy uzyskane metodą BERTopic zostały porównane z popularną metodą analizy tematycznej --- LDA\@.
+	Tematy uzyskane metodą BERTopic zostały porównane z popularną metodą modelowania tematycznego --- LDA\@.
 	W tym celu wykonano pomiary spójności algorytmami opisanymi w poprzednich rozdziałach.
 	Jedną z zasadniczych wad algorytmu LDA jest fakt, iż liczba tematów jest jego parametrem.
 	Aby znaleźć optymalną liczbę tematów, przeprowadzono pomiary dla różnych wartości parametru z zakresu [10--300].

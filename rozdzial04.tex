@@ -1,13 +1,14 @@
 % !TeX root = ./Dyplom.tex
 % chktex-file 21
 
-\chapter{Analiza tematyczna}\label{sec:topic_modeling}
-	Analiza tematyczna (ang.\ \emph{topic modeling}) służy do organizowania, wyjaśniania, analizy w czasie, przeszukiwania i streszczania dużych zbiorów danych.
+\chapter{Modelowanie tematyczne}\label{sec:topic_modeling}
+	Modele tematyczne (ang.\ \emph{topic modeling}) służą do organizowania, wyjaśniania, analizy w czasie, przeszukiwania i streszczania dużych zbiorów danych.
+	Odbywa się to poprzez wynajdywanie podobieństw między dokumentami w korpusie.
 	Najpopularniejszą metodą modelowania tematów jest LDA (ang.\ \emph{Latent Dirichlet Allocation})\cite{LDA}.
 	Jest to generatywny model probabilistyczny.
 	Dokonuje dyskretyzacji ciągłej przestrzeni tematów na z góry określoną liczbę \emph{t} tematów
-		i modeluje dokumenty jako kombinację tematów, dla każdego określając prawdopodobieństwo.
-	Każdy temat jest rozkładem prawdopodobieństwa słów.
+		i modeluje dokumenty jako kombinację tematów, dla każdego określając prawdopodobieństwo, że dokument jest na dany temat.
+	Równocześnie każdy temat jest rozkładem prawdopodobieństwa wystąpienia słów.
 	Wiąże się to z pewnymi problemami, mianowicie często największe prawdopodobieństwo wystąpienia mają powszechne słowa nie niosące istotnej informacji, np.\ zaimki czy łączniki.
 	Problem ten jest częściowo rozwiązywany listą nieinformatywnych słów (ang.\ \emph{stop words}), które są odfiltrowywane z dokumentów.
 	Często lista ta musi być dopasowana do danego zbioru tekstów.
@@ -22,7 +23,7 @@
 	Jak pokazano w~\cite{BoW_PL}, nadzorowane metody klasyfikacji wykorzystujące te wektory dają podobne wyniki do metod opartych o \emph{word-to-vec}.
 
 	Modele oparte o transformery osiągają najlepsze wyniki w wielu zagadnieniach z dziedziny NLP\cite{KLEJ},
-		więc powstały również bazujące na nich metody analizy tematycznej.
+		więc powstały również bazujące na nich metody modelowania tematycznego.
 	Jedną z nich jest BERTopic\cite{BERTopic}, algorytm generujący tematy na podstawie wektorów BERT\@.
 	Wykorzystuje UMAP\cite{UMAP} w celu redukcji wymiarowości wektorów do 5 wymiarów.
 	Następnie za pomocą algorytmu HDBSCAN\cite{HDBSCAN} wektory grupowane są w klastry.
@@ -49,7 +50,7 @@
 
 	Redukcja do zbyt niskiego wymiaru może skutkować zbyt wielkiej utracie informacji,
 		podczas gdy redukcja do większego wymiaru może dawać gorsze rezultaty podczas grupowania.
-	Postanowiono redukować dane do pięciu wymiarów, tak jak w algorytmie BERTopic.
+	Postanowiono redukować dane do pięciu wymiarów, tak jak sugeruje autor BERTopic\cite{BERTopic}.
 	Podczas redukcji wymiarowości wektorów SBERT i USE korzystano z metryki kosinusowej.
 	Dla wektorów TF-IDF zastosowano metrykę Hellingera, która mierzy podobieństwo rozkładów prawdopodobieństwa
 		(wektory tf-idf można traktować jak prawdopodobieństwo znalezienia danego tokenu w dokumencie).

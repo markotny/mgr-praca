@@ -5,7 +5,7 @@
 	W zagadnieniach NLP (ang. \emph{Natural Language Processing}) słowa wyrażone są w postaci wektorów liczb rzeczywistych (ang.\ \emph{word embedding}).
 	W powstałej przestrzeni odległość między wektorami reprezentującymi podobne słowa jest mniejsza, niż odległość między słowami o różnym znaczeniu.
 	Tradycyjne metody opierają się na semantyce dystrybucyjnej.
-	Zgodnie z tą teorią, słowa występujące w podobnym kontekście mają podobne znaczenie.
+	Zgodnie z tą teorią, słowa występujące w podobnym kontekście mają podobne znaczenie\cite{distributional_semantics}.
 	Bazując na tej zasadzie skonstruowano wiele algorytmów, zdolnych do wygenerowania wektorów słów analizując dużą ilość nieustrukturyzowanych tekstów.
 	Architektura takich modeli opiera się na sieciach neuronowych próbujących przewidzieć słowo w zależności od kontekstu
 		(modele CBOW --- ang. \emph{Continuous bag-of-words}) lub kontekst w zależności od słowa (ang.\ \emph{skip-gram})\cite{word2vec}, gdzie kontekst to otaczające słowa.
@@ -45,7 +45,7 @@
 \section{Wektory zdań}
 	Modele bazujące na BERT stworzone są z myślą generowania wektorów dla każdego tokena wejściowego.
 	Otrzymane w ten sposób wektory kodują informacje semantyczne o wszystkich słowach zdania, jednak nie zawierają informacji o samym zdaniu.
-	Jedną z możliwości jest wykorzystanie wartości wektora dla tokena \verb|CLS| --- jest to token wykorzystywany podczas uczenia modelu i reprezentuje znaczenie zdania w kontekście zadań klasyfikacji.
+	Jedną z możliwości jest wykorzystanie wartości wektora dla tokena \verb|CLS| --- jest to token wykorzystywany podczas uczenia modelu i reprezentuje znaczenie zdania w kontekście zadań klasyfikacji\cite{BERT}.
 	Można również uśrednić wektory wszystkich słów, jednak nie wszystkie słowa w zdaniu niosą tak samo dużo znaczenia.
 	
 	Rozwiązanie tego problemu proponują autorzy Sentence-BERT\cite{sbert}.
@@ -67,7 +67,7 @@
 	Opiera się na koncepcji, według której te same zdania w różnych językach powinny być reprezentowane przez podobne wektory w tej samej przestrzeni.
 	Przekazanie wiedzy polega na minimalizacji różnicy wyników między modelem nauczającym, a modelem uczącym się (ang.\ \emph{teacher-student}) --- Rys.~\ref{fig:sbert_multilingual}.
 	W tym przykładzie modelem-nauczycielem jest SBERT wytrenowany na angielskim korpusie, natomiast uczniem jest model XLM-R (XLM-RoBERTa).
-	Jest to wielojęzykowy model bazujący na architekturze RoBERTa (wariacja BERT stworzona przez Facebook), wytrenowany na 2.5TB danych z CommonCrawl w 100 językach, w tym polskim\cite{xml_r}.
+	Jest to wielojęzykowy model bazujący na architekturze RoBERTa (wariacja BERT stworzona przez Facebook), wytrenowany na 2.5TB danych z CommonCrawl w 100 językach, w tym polskim\cite{xlm_r}.
 	Model ten zajmuje obecnie ósme miejsce w rankingu KLEJ\footnote{\url{https://klejbenchmark.com/leaderboard} (dostęp dnia 20 maja 2021)}
 		oraz drugie miejsce po dostrojeniu (ang.\ \emph{fine-tuning}) na dodatkowych polskich korpusach.
 	\begin{figure}[htb]
@@ -80,7 +80,7 @@
 	Jest to dużo mniejsze ograniczenie, niż w przypadku bezpośredniego uczenia SBERT w docelowym języku.
 	Dostępne są wytrenowane modele\footnote{\url{https://www.sbert.net/docs/pretrained_models} (dostęp dnia 20 maja 2021)}, które obejmują również język polski.
 	Zostały one uwzględnione w rankingu modeli generujących reprezentacje zdań w języku polskim\cite{sentence_eval}.
-	W pracy tej autorzy przetłumaczyli popularny angielski korpus SICK (ang.\ \emph{Sentences Involving Compositional Knowledge})
+	W pracy tej autorzy przetłumaczyli popularny angielski korpus SICK\cite{SICK} (ang.\ \emph{Sentences Involving Compositional Knowledge})
 		zawierający pary zdań oznaczone pod kątem implikacji (ang.\ \emph{entailment}).
 	Każda para może być albo powiązana (prawdziwość pierwszego zdania oznacza prawdziwość drugiego), neutralna (pierwsze zdanie nie mówi nic o prawdziwości drugiego), albo sprzeczna.
 	Na podstawie tego korpusu stworzono dwa zadania odpowiadające angielskim --- SICK-E (zadanie klasyfikacji) oraz SICK-R (zadanie przewidywania dystrybucji podobieństwa, mierzone miarą korelacji Pearsona).
@@ -125,10 +125,10 @@
 	Do wygenerowania wag oraz rankingu potrzebna jest metoda oceniająca, na ile istotne jest każde zdanie w kontekście całej wypowiedzi.
 	Stworzono w tym celu dwie metody: jedna wykorzystująca algorytm LexRank oraz druga wykorzystująca TF-IDF\@.
 
-	\subsection{LexRank}
+	\subsection{Ważenie LexRank}
 		LexRank\cite{LexRank} to stworzony w 2004r.\ stochastyczny algorytm bazujący na teorii grafów, służący do generowania podsumowań długich tekstów.
-		Jako podsumowanie traktowany jest zbiór najistotniejszych zdań z tekstu --- jest to metoda ekstrakcyjna, która nie zmienia struktury zdań.
-		Istnieją nowe metody bazujące na uczeniu maszynowym, które jako podsumowanie generują nowy tekst zawierający sens dokumentu,
+		Jako podsumowanie dokumentu traktowany jest zbiór najistotniejszych zdań z tekstu --- jest to metoda ekstrakcyjna, która nie zmienia struktury zdań.
+		Istnieją nowe metody bazujące na uczeniu maszynowym, które jako podsumowanie generują nowy tekst zawierający sens dokumentu\cite{abstractive_summ},
 			jednak na potrzeby tej pracy wymagany jest algorytm przypisujący wagi oryginalnym zdaniom.
 		
 		Algorytm konstruuje graf, gdzie wierzchołki odpowiadają zdaniom, a ich wartość obliczana jest algorytmem TF-IDF\@.
@@ -160,7 +160,7 @@
 		Wartość IDF obliczana jest według następującego wzoru:
 		\[idf(t)=\log\left(\frac{1+n}{1+df(t)}\right) + 1\]
 		gdzie \(t\) oznacza słowo, \(n\) to liczba wszystkich dokumentów, a \(df(t)\) to częstość występowania słowa we wszystkich dokumentach.
-		Wartość \(tfidf(t)\) obliczana jest jako iloczyn \(tf(t)\) i \(idf(t)\).
+		Wartość \(tfidf(t)\) obliczana jest jako iloczyn \(tf(t)\) i \(idf(t)\)\cite{TFIDF}.
 		
 		W pierwszym kroku wyuczono model na całym korpusie, aby skonstruować pełen słownik oraz wartości macierzy IDF\@.
 		Następnie podczas generowania wektorów wypowiedzi, obliczana jest macierz tf-idf, gdzie wierszami są kolejne zdania.
@@ -199,19 +199,19 @@
 
 \section{Alternatywne rozwiązania}
 	Modele oparte o transformery zajmują obecnie wysokie miejsca w rankingach\cite{KLEJ,sentence_eval}, jednak nie są to jedyne metody dające dobre wyniki.
-	W celu porównania wyników wygenerowano wektory dwoma alternatywnymi metodami --- siecią konwolucyjną oraz standardowym TF-IDF\@.
+	W celu porównania wyników wygenerowano wektory dwoma alternatywnymi metodami --- siecią konwolucyjną oraz omawianym w poprzednim podrozdziale TF-IDF\@.
 
 	\subsection{Sieć konwolucyjna}
 		Sieci konwolucyjne wykorzystują warstwy połączone filtrami konwolucyjnymi nakładanymi na lokalne cechy.
 		Początkowo wykorzystywane do zagadnień związanych z przetwarzaniem obrazów,
-			znalazły zastosowanie również w pozostałych dziedzinach uczenia maszynowego, w tym NLP\@.
+			znalazły zastosowanie również w pozostałych dziedzinach uczenia maszynowego, w tym NLP\cite{CNN_NLP}.
 		W 2019r. Google udostępniło wielojęzykowy wariant modelu USE (ang.\ \emph{Universal Sentence Encoder})\cite{use_multilingual} wspierający 16 języków, w tym polski.
 		W pracy tej opisano dwa warianty --- jeden wykorzystujący CNN oraz drugi opierający się na transformerach.
 		Model oparty na transformerach osiągnął drugi najlepszy wynik w zadaniu SICK-R w polskim rankingu Polish Sentence Evaluation\cite{sentence_eval}.
 		Wersja CNN modelu jest szybsza kosztem mniejszej dokładności.
 		Umożliwia ona jednak kodowanie znacznie dłuższych zdań (256 tokenów kontra 100).
 		Oba modele wytrenowane zostały na danych zebranych z forów dyskusyjnych (w postaci pytania i odpowiedzi)
-			oraz na zbiorze SNLI (Stanford Natural Language Inference) przetłumaczonym na pozostałe 15 języków za pomocą Google Translate.
+			oraz na zbiorze SNLI\cite{SNLI} (Stanford Natural Language Inference) przetłumaczonym na pozostałe 15 języków za pomocą Google Translate.
 
 	\subsection{TF-IDF}\label{sec:tfidf_vectors}
 		W przeciwieństwie do omawianych wyżej modeli, w przypadku TF-IDF długość wypowiedzi działa na korzyść algorytmu.

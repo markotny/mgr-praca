@@ -1,11 +1,40 @@
 % !TeX root = ./Dyplom.tex
 
-\chapter{Wstęp}\label{sec:wprowadzenie}
-
-\section{wprowadzenie}
-
+\chapter{Wstęp}
+ 
 \section{Cel i zakres pracy}
-	Skonstruowanie narzędzia w języku Python do znajdowania różnic i podobieństw między wypowiedziami pozyskanymi z korpusu dyskursu parlamentarnego.
-	Wykorzystanie metod semantyki dystrybucyjnej do dokonywania analizy semantycznej.
+	Celem pracy jest zbadanie skuteczności nowoczesnych metod z dziedziny przetwarzania języka naturalnego na nieotagowanym zestawie danych.
+	W ostatnich latach powstały przełomowe rozwiązania oparte na modelach językowych bazujących na architekturze BERT\@.
+	W pracy przeprowadzone zostaną badania mające na celu ustalenie, jak sprawują się takie metody dla języka polskiego w kontekście nienadzorowanego problemu modelowania tematycznego.
+	Jest to zadanie, w którym model językowy grupuje dokumenty poprzez analizę semantyczną zakładając,
+		że zgrupowane dokumenty reprezentują wspólny temat.
+	
+	Jako źródło dokumentów posłużą wypowiedzi posłów Sejmu III Rzeczpospolitej Polskiej pozyskane z korpusu dyskursu parlamentarnego.
+	Z takim zbiorem danych wiążą się dodatkowe wyzwania, mianowicie nie wszystkie wypowiedzi zawierają wyróżniające słowa
+		(np.\ kiedy wypowiedź jest odpowiedzią na zapytanie to osoba nie zawsze zawrze w wypowiedzi kontekst).
+	Dodatkowo, większość współczesnych metod NLP operuje na krótkich dokumentach, podczas gdy wypowiedzi sejmowe mają formę nierzadko długich przemówień.
+	Te aspekty zbioru danych oraz wysokie zróżnicowanie tematyczne kwestii poruszanych w sejmie sprawiają, że jest to intrygujący i obiecujący zestaw dokumentów do analizy.
+
+	Analiza przeprowadzona zostanie na modelach wykorzystujących trzy alternatywne podejścia kodowania dokumentów:
+	\begin{itemize}
+		\item architektura BERT,
+		\item sieć konwolucyjna,
+		\item TF-IDF (metoda statystyczna).
+	\end{itemize}
+	Ponadto, testy wykonane zostaną dla różnych kombinacji parametrów wykorzystywanych algorytmów do redukcji wymiarowości i grupowania wektorów,
+		aby odnaleźć optymalne wartości dla analizowanego korpusu.
+
+	Jako alternatywną metodę modelowania tematycznego dokumentów, która stanowi punkt odniesienia,
+		przeprowadzona zostanie analiza modelem LDA\@.
+	Jest to obecnie jedno z najpopularniejszych narzędzi przeprowadzania modelowania tematycznego\cite{LDA_popularity},
+		które bazuje na metodach statystycznych.
 
 \section{Układ pracy}
+	W kolejnym rozdziale omówiony zostanie wykorzystywany korpus wypowiedzi sejmowych,
+		oraz działania jakie zostały wykonane podczas jego przetwarzania.
+	W rozdziale trzecim przedstawiono wszystkie analizowane metody generowania wektorów dokumentów.
+	Rozdział czwarty zawiera opisy kolejnych kroków wykonywanych w ramach modelowania tematycznego
+		--- redukcja wymiarowości wektorów, grupowanie oraz generowanie reprezentacji tematu.
+	W kolejnym rozdziale przedstawione zostały sposoby ewaluacji tematów odnalezionych w korpusie.
+	W szóstym rozdziale opisano uzyskane wyniki zarówno pod kątem wykorzystywanych metod i parametrów, jak i zastosowanych metryk.
+	W ostatnim rozdziale zawarto podsumowanie pracy.
