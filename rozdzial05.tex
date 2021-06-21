@@ -334,7 +334,7 @@ scores['avg'] = np.nanmean(s, axis=1)
 	\end{itemize}
 	oraz pominięto liczenie wyniku \(C_{NPMI}\).
 	W tabeli~\ref{tab:avg_scores}a przedstawiono posortowane, uśrednione wyniki \(C_{UMass}\), \(s_c\), \(s_f\) oraz \(s_T\).
-	Na podstawie tych wyników zdecydowano się odrzucić metody bazujące na najlepszych wektorach wg.\ rankingu (top1 i top5),
+	Na podstawie tych wyników zdecydowano się odrzucić metody bazujące na najlepszych wektorach wg.\ rankingu (\emph{top1} i \emph{top5}),
 		ponieważ zarówno dla algorytmu LexRank, jak i TF-IDF dawały one zauważalnie gorsze wyniki od pozostałych metod.
 	Z tego powodu nie zostały one uwzględnione podczas obliczania wyników dla pełnego zakresu parametrów.
 	Uśrednione wyniki na pełnym zakresie, uwzględniające również metodę \(C_{NPMI}\), przedstawione zostały w tabeli~\ref{tab:avg_scores}b.
@@ -499,7 +499,7 @@ scores['avg'] = np.nanmean(s, axis=1)
 	Stenografy z przemówień często zawierają różne komentarze, odniesienia do poprzedzających wypowiedzi itp.
 	W momencie, kiedy mówca wypowiada się jedynie nawiązując do tematu słowami typu ,,proponowana ustawa'',
 		nie sposób zrozumieć, o czym jest mowa, bez analizy poprzedzających wypowiedzi.
-	Jedną z zalet algorytmu HDBSCAN jest wykrywanie szumu, a więc takie wypowiedzi nie są na siłę przyporządkowywane do jakiegoś jednego tematu.
+	Jedną z zalet algorytmu HDBSCAN jest wykrywanie szumu, a więc takie wypowiedzi nie są usilnie przyporządkowywane do tematu.
 	Dzięki temu tematy są znacznie bardziej spójne, niż te wygenerowane przez LDA\@.
 
 	\begin{table}[htb]

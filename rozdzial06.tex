@@ -21,8 +21,8 @@
 		Te z kolei zwykle rozpoczynają się od formalnego przywitania, np. ,,Szanowna Pani Marszałek!'', ,,Szanowni Państwo!'' czy ,,Wysoka Izbo!''.
 		Stąd model, który analizuje całość wypowiedzi począwszy od przywitań, często podda analizie jedynie niewielki fragment merytorycznej części wypowiedzi.
 		Efekt ten jest szczególnie uwypuklony w przypadku modeli SBERT, które wyuczone są na zdaniach krótszych niż maksymalny limit wynikający z architektury
-			(który dla modeli bazujących na BERT wynosi 512 tokenów).
-		Tematy wygenerowane przez model o indeksie w tabeli z wynikami \textbf{37} przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
+			(który dla modeli bazujących na BERT wynosi 512 tokenów, podczas gdy dostępne wytrenowane modele domyślnie ograniczone sa do 128 tokenów).
+		Tematy wygenerowane przez przykładowy model bazujący na tej metodzie, o indeksie w tabeli z wynikami \textbf{37}, przedstawione zostały w tabeli~\ref{tab:sbert_default_topics}.
 		Można podejrzewać, że temat nr.~\emph{A} zawiera wypowiedzi rozpoczynające się od komentarza kierowanego do innego posła, a w temacie~\emph{C} przemawiający odnoszą się do agendy danego dnia.
 		Żadne z tych tematów nie nadają się do dalszej analizy.
 
@@ -45,7 +45,7 @@
 		Są one wydobywane, jeśli parametry UMAP oraz HDBSCAN zostaną dostrojone tak,
 			aby brane pod uwagę były tylko lokalne zależności (niskie \verb|n_neighbors| oraz \verb|min_samples|).
 		Wraz ze wzrostem wartości tych parametrów, brane są pod uwagę ogólniejsze podobieństwa,
-			do w przypadku takiego modelu oznacza formalne przywitania, czy nazwiska posłów.
+			co w przypadku takiego modelu oznacza formalne przywitania, czy nazwiska posłów.
 		Jednak nawet najlepszy model (indeks \textbf{34}) jako szum oznaczył prawie 165 tysięcy wypowiedzi, podczas gdy mediana wynosi ok.~137 tysięcy.
 		Wynika to z tego, że nawet jeśli model był w stanie wyciągnąć informacje z początku wypowiedzi, to nie zawsze było to wystarczające, przez co więcej dokumentów zostało zaklasyfikowanych jako szum.
 		Średni wynik tego modelu wynoszący w zaokrągleniu \(0.45\) również jest znacznie poniżej mediany \(0.57\).
@@ -90,7 +90,7 @@
 		\end{table}
 
 	\subsection{TF-IDF}\label{sec:tfidf_summary}
-		Metoda tworzenia wektorów za pomocą algorytmu TF-IDF okazała się skuteczna do analizy danych z korpusu.
+		Metoda tworzenia wektorów za pomocą algorytmu TF-IDF okazała się efektywna podczas analizy danych z korpusu.
 		Skuteczność tego algorytmu podyktowana jest specyfiką problemu.
 		Rozmiar analizowanych wypowiedzi, który jest źródłem problemów dla algorytmów opartych o uczenie maszynowe,
 			jednocześnie sprzyja dokładności algorytmów statystycznych.
@@ -105,12 +105,12 @@
 		Wraz ze wzrostem wartości parametru \emph{min\_cluster\_size}, powstrzymujemy algorytm przed rozbiciem klastrów na pomniejsze grupy
 			(podczas etapu kondensowania hierarchii grup opisanego w rozdziale~\ref{sec:hdbscan}).
 		W ten sposób możliwa jest redukcja liczby tematów z prawie 1800 (dla \emph{min\_cluster\_size=5}) do mniej niż 200 (dla \emph{min\_cluster\_size=200}).
-		Efekt ten jest widoczny na wykresie~\ref{fig:topic_counts}, gdzie najwyższy wynik uzyskał model dla parametrów \emph{min\_cluster\_size=200} oraz \emph{min\_samples=100}.
+		Efekt ten jest ukazany został na wykresie~\ref{fig:topic_counts}, gdzie najwyższy wynik uzyskał model dla parametrów \emph{min\_cluster\_size=200} oraz \emph{min\_samples=100}.
 		Uzyskał on prawie tak wysoki wynik, jak pozostałe modele dla parametrów \emph{min\_cluster\_size=100} oraz \emph{min\_samples=1}.
 		Proces ten pozwolił wektorom tf-idf na osiągnięcie lepszych uśrednionych wyników niż jakiekolwiek inne analizowane metody (rys.~\ref{fig:avg_scores}, zakres dla \emph{min\_cluster\_size=200}).
 
 		Tak drastyczna redukcja tematów wiąże się jednak z innym problemem.
-		Ze względu na wysoką specyficzność tematów wygenerowanych przez tfidf, grupy powstałe przez połączenie mniejszych grup nie zawsze są spójne.
+		Ze względu na wysoką specyficzność tematów wygenerowanych przez \emph{tf-idf}, grupy powstałe przez połączenie mniejszych grup nie zawsze są spójne.
 		Relację tę dobrze ukazuje metryka \(C_{UMass}\) (Rys.~\ref{fig:umass_score}).
 		Metryka ta mierzy współwystępowanie słów z reprezentacji tematu we wszystkich dokumentach grupy.
 		Oba modele \emph{tfidf} osiągają znacznie gorszy wynik od pozostałych, co wskazuje na duże zróżnicowanie zgrupowanych dokumentów.
@@ -128,19 +128,19 @@
 		Wariant USE testowany w pracy zbudowany jest na konwolucyjnych sieciach neuronowych.
 		Architektura ta nie jest zwykle utożsamiana z zadaniami NLP (ang.\ \emph{Natural Language Processing}), jednak również możliwe jest osiągnięcie dobrych rezultatów.
 		Tak też było w tym przypadku.
-		Ciekawą różnicą w stosunku do modeli opartych o SBERT, wektory wygenerowane przez USE dawały najlepsze wyniki dla modeli analizujących bezpośrednio całą wypowiedź (\emph{use-default}).
+		Uwagę zwraca różnica w stosunku do modeli opartych o SBERT, mianowicie wektory wygenerowane przez USE dawały najlepsze wyniki dla modeli analizujących bezpośrednio całą wypowiedź (\emph{use-default}).
 		Oznacza to, że model USE dużo lepiej radzi sobie z długimi zdaniami.
 		Różnica ta obrazuje, na jak krótkich zdaniach wytrenowany został model SBERT\@.
 		Pomimo większego limitu wejścia tych modeli (512 tokenów), model operujący na całych wypowiedziach (\emph{sbert-default}) osiągał najsłabsze wyniki.
 		Tymczasem model USE najlepsze wyniki osiągał na całych wypowiedziach pomimo bardziej ograniczającego limitu 256 tokenów.
 		Wysoka dokładność USE może też być efektem znanego zjawiska (zwykle w kontekście artykułów czy wiadomości),
-			gdzie na początku dokumentu zawarta jest często informacja, o czym jest dokument (jako wstęp).
+			zgodnie z którym na początku tekstu zawarta jest często informacja, o treści całego dokumentu (jako wstęp).
 		Możliwe, że wypowiedzi posłów w sejmie również często posiadają analogiczną strukturę
 			(na wstępie odniesienie się do tego, o czym jest mowa, a następnie rozwinięcie szczegółów), co ułatwia przyporządkowanie tematów na podstawie samego początku dokumentu.
 
 		Jak pokazano na podsumowaniu w tabeli~\ref{tab:avg_scores}b, wektory wygenerowane przez USE dla każdego zdania z osobna, osiągają istotnie gorsze wyniki,
 			jeśli zastosowane zostało ważenie wektorów.
-		Użycie zwykłej średniej wektorów daje znacznie lepsze wyniki, aczkolwiek różnica między tymi dwoma podejściami jest diametralna
+		Użycie zwykłej średniej wektorów daje znacznie lepsze wyniki, a różnica między tymi dwoma podejściami jest diametralna
 			(w przeciwieństwie do wektorów SBERT, gdzie ważone wektory są niewiele gorsze).
 	
 \section{Porównanie z LDA}
@@ -148,24 +148,24 @@
 	Niemniej warto jednak przyjrzeć się wynikom funkcji \(C_{NPMI}\) i \(C_{UMass}\) ukazanym na rys.~\ref{fig:lda_scores}.
 	Obie te miary oceniły najwyżej modele zawierające do 80 tematów.
 	Jak wykazała manualna analiza, reprezentacje tych tematów były nieporównywalnie gorsze od reprezentacji tematów wygenerowanych przez BERTopic.
-	Pomimo to, model LDA dla 80 tematów osiąga wynik ok.~0.068 (tabela~\ref{tab:lda_scores}),
+	Pomimo to, model LDA dla 80 tematów osiąga wynik \(C_{NPMI}\) ok.~0.068 (tabela~\ref{tab:lda_scores}),
 		podczas gdy tak wysoką wartość osiąga jedynie kilka modeli wygenerowanych przez BERTopic (np.~model tfidf o indeksie 367).
-	Jest to znak, że metryka ta może nie być dobrym wyznacznikiem jakości tematów dla tego korpusu.
+	Jest to znak, że metryka ta może nie być dobrym wyznacznikiem jakości tematów dla tego typu dokumentów.
 
 	Metryka \(C_{UMass}\) wydaje się być bardziej spójna dla tego korpusu.
 	Model LDA dla 80 tematów osiągnął wartość \(-0.813\).
 	Nadal jest to wysoka wartość, jak na jakość reprezentacji tematów, jednak nie jest to wartość nieprzekraczana przez modele BERTopic.
 	Porównując reprezentacje tematów obu typów modeli dla tego samego wyniku \(C_{UMass}\) wciąż widoczna jest duża różnica w jakości,
-		dlatego metryka ta również nie jest idealnym odwzorowaniem jakości tematów.
+		co wskazuje, że metryka ta również nie jest idealnym odwzorowaniem jakości tematów.
 	
 \section{Omówienie wyników dla poszczególnych metryk}
 	Ze względu na naturę nienadzorowanych problemów, żadna metryka nie odzwierciedla w pełni właściwości wyników.
-	Każda metryka jest jedynie przybliżeniem i oceną pewnych aspektów rezultatu, jednak nie może być traktowana jako uniwersalna prawda.
-	W kolejnych częściach przedstawione zostaną wyniki poszczególnych metryk oraz jakie wiążą się z nimi wady.
+	Każda jest jedynie przybliżeniem i oceną pewnych aspektów rezultatu, jednak nie może być traktowana jako uniwersalna prawda.
+	W kolejnych częściach przedstawione zostaną wyniki poszczególnych metryk oraz jakie wiążą się z nimi problemy.
 
 	Tabela~\ref{tab:corr} przedstawia macierz korelacji Pearsona między wykorzystywanymi parametrami oraz metrykami.
 	Nie zauważono dużej korelacji między wykorzystywanymi metrykami co oznacza,
-		że wyciąganie z nich średniej arytmetycznej nie powinno faworyzować poszczególnych aspektów analizowanych danych.
+		że wyciąganie z nich średniej arytmetycznej nie powinno promować poszczególnych aspektów analizowanych danych.
 	Jedyna istotna korelacja (\(>0.5\)) wystąpiła pomiędzy metrykami \(U_{MAss}\) oraz \(c_{NPMI}\).
 	Jest to odwrotna korelacja (\(-0.801\)), co sugeruje, że metryki te zupełnie inaczej oceniają spójność wykrytych tematów.
 
@@ -232,7 +232,7 @@
 		Nie jest to jednak wystarczająco wysoka wartość by stwierdzić, że wartości te są od siebie zależne.
 
 		Patrząc na tabelę z wynikami, modele, które wykryły od kilku do kilkunastu tematów, zgodnie z oczekiwaniami osiągnęły bardzo wysoki wynik w tej mierze.
-		Należy mieć to na uwadze, że miara ta nie może posłużyć do oceny takich modeli.
+		Należy mieć na uwadze, że miara ta nie może posłużyć do oceny takich modeli.
 		To samo tyczy się również poprzednich dwóch miar, gdzie dla \(C_{UMass}\) modele te zbliżyły się do wartości równej 0 (najlepszy możliwy wynik),
 			a dla \(C_{NPMI}\) osiągały wyniki dwu-trzykrotnie lepsze niż najlepsze poprawne modele.
 
@@ -248,7 +248,7 @@
 		Analiza liczby odnalezionych tematów pełni podobną rolę.
 		Modele, które odnajdują zbyt dużą liczbę tematów (\emph{tfidf, tfidf-spacy}) zawdzięczają wysokie wyniki dużej liczbie grup.
 		Dzięki znormalizowaniu liczby odnalezionych tematów, możliwa jest ocena danego modelu pod tym kątem.
-		Zarówno modele odnajdujące za mało tematów (np.~modele \emph{sbert} oraz \emph{use} dla \emph{min\_cluster\_size=200}) otrzymują niski wynik.
+		Modele odnajdujące za mało tematów (np.~modele \emph{sbert} oraz \emph{use} dla \emph{min\_cluster\_size=200}) otrzymują niski wynik.
 		Analogicznie modele, które wykryły za dużo tematów, otrzymują równie niski wynik.
 		Zależność ta przedstawiona została na rysunku~\ref{fig:topic_counts}.
 		
