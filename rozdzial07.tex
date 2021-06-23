@@ -1,3 +1,30 @@
 % !TeX root = ./Dyplom.tex
 
 \chapter{Podsumowanie}
+	W pracy wykonane zostało kompleksowe porównanie metod kodujących duże i różnorodne dokumenty w wektory zachowując cechy semantyczne tekstu.
+	Jako zadanie służące do porównania efektywności modeli językowych wybrano modelowanie tematyczne, które jest problemem uczenia nienadzorowanego.
+	Skupiono się na najnowszych algorytmach z tej dziedziny, jednak porównano je również z wiodącą metodą LDA\@.
+	Z powodzeniem utworzono modele przewyższające jakością LDA, choć nie wszystkie pierwotne założenia okazały się słuszne.
+	Jak pokazała analiza wyników, dokładność zaawansowanych modeli takich jak \emph{Sentence-Transformers} czy \emph{Universal Sentence Encoder}
+		maleje dla długich wypowiedzi.
+	Okazuje się, że analizując tak długie teksty, lepiej jest skorzystać ze zwykłych metod statystycznych poprzedzonych lematyzacją danych wejściowych.
+	Wektory wygenerowane w taki sposób efektywniej wykorzystują duży rozmiar dokumentów,
+		podczas gdy pozostałe modele osiągają gorszą dokładność wynikającą z uśredniania wektorów zdań bądź analizy tylko początkowych fragmentów wypowiedzi.
+
+	Wysoce prawdopodobne, że w kontekście innych problemów dokładność wektorów wygenerowanych przez zaawansowane modele językowe dadzą lepsze rezultaty.
+	Takim problemem może być przykładowo analiza wydźwięku (ang.\ \emph{sentiment analysis}), czy asymetryczne wyszukiwanie (porównywanie krótkiego zapytania z długimi wypowiedziami).
+	Interesującym rozszerzeniem pracy byłoby połączenie modelu tematycznego z analizą wydźwięku.
+	Umożliwiłoby to analizę, jakie ugrupowania polityczne wypowiadają się pozytywnie lub negatywnie na dane tematy.
+	Nie jest jednak jasne, w jaki sposób dokonać automatycznej ewaluacji dokładności takich modeli.
+
+
+	\section{Możliwości dalszego usprawnienia modeli}
+		W projekcie skorzystano z dostępnych wytrenowanych modeli wielojęzykowych.
+		Bardzo możliwe, że wytrenowanie modelu dedykowanego do języka polskiego przyniesie lepsze wyniki.
+		Stworzenie zbioru danych treningowych do bezpośredniego wytrenowania modelu \emph{SBERT} nie wydaje się łatwo wykonalne,
+			aczkolwiek możliwe jest przekazanie wiedzy z modelu angielskiego na polski.
+		Wtedy można by wykorzystać najlepszy polski model wielojęzykowy wg.~rankingu KLEJ\footnote{\url{https://klejbenchmark.com/leaderboard} (dostęp dnia 20 czerwca 2021)} (\emph{XLM-RoBERTa (large) + NKJP}).
+		Jest to jednak kosztowne działanie ze względu na rozmiar modelu.
+		Obiecującym podejściem jest też analiza dokumentów modelami typu Longformer\cite{Longformer}, które dostosowują modele BERT do znacznie dłuższych sekwencji.
+		Nie istnieje jeszcze model w pełni wytrenowany dla języka polskiego, są jednak prowadzone nad tym prace\footnote{\url{https://huggingface.co/clarin-pl/long-former-polish} (dostęp dnia 20 czerwca 2021)}. 
+
