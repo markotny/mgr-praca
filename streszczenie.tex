@@ -12,20 +12,38 @@
 %%%Nam id nulla a adipiscing tortor, dictum ut, lobortis urna. Donec non dui. Cras tempus orci ipsum, molestie quis, lacinia varius nunc, rhoncus purus, consectetuer congue risus. 
 %\mbox{}\vspace{2cm} % można przesunąć, w zależności od długości streszczenia
 \begin{abstract}
-Lorem ipsum dolor sit amet eleifend et, congue arcu. Morbi tellus sit amet, massa. Vivamus est id risus. Sed sit amet, libero. Aenean ac ipsum. Mauris vel lectus. 
-
-Nam id nulla a adipiscing tortor, dictum ut, lobortis urna. Donec non dui. Cras tempus orci ipsum, molestie quis, lacinia varius nunc, rhoncus purus, consectetuer congue risus. 
+	W ostatnich latach powstały przełomowe rozwiązania z dziedziny przetwarzania języka, oparte na modelach językowych bazujących na Transformerach.
+	W pracy zbadano skuteczność takich modeli dla języka polskiego w kontekście problemu modelowania tematycznego.
+	Algorytmy porównano z wiodącą metodą LDA\@.
+	Testy przeprowadzono na Korpusie Dyskursu Parlamentarnego, który zawiera różnorodne i długie wypowiedzi.
+	Modelowanie tematyczne oparto na algorytmie BERTopic, który składa się z następujących kroków:
+		osadzenie wektorów zdań, redukcja wymiarowości wektorów i klastrowanie w grupy tematyczne.
+	
+		Z powodzeniem utworzono modele przewyższające jakością LDA, choć nie wszystkie pierwotne założenia okazały się słuszne.
+	Jak pokazała analiza wyników, dokładność zaawansowanych modeli takich jak \emph{Sentence-Transformers} czy \emph{Universal Sentence Encoder}
+		maleje dla długich wypowiedzi.
+	Okazuje się, że analizując tak długie teksty, lepiej jest skorzystać ze zwykłych metod statystycznych \emph{TF-IDF} poprzedzonych lematyzacją danych wejściowych.
+	Wektory wygenerowane w taki sposób efektywniej wykorzystują duży rozmiar dokumentów,
+		podczas gdy pozostałe modele osiągają gorszą dokładność wynikającą z uśredniania wektorów zdań bądź analizy tylko początkowych fragmentów wypowiedzi.
 \end{abstract}
-\mykeywords{raz, dwa, trzy, cztery}\\ 
+\mykeywords{nlp, bert, bertopic, lda, modelowanie tematyczne}\\ 
 % Dobrze byłoby skopiować słowa kluczowe do metadanych dokumentu pdf (w pliku Dyplom.tex)
 % Niestety, zaimplementowane makro nie robi tego z automatu, więc pozostaje kopiowanie ręczne.
 
 {
 \selectlanguage{english}
 \begin{abstract}
-Lorem ipsum dolor sit amet eleifend et, congue arcu. Morbi tellus sit amet, massa. Vivamus est id risus. Sed sit amet, libero. Aenean ac ipsum. Mauris vel lectus. 
-
-Nam id nulla a adipiscing tortor, dictum ut, lobortis urna. Donec non dui. Cras tempus orci ipsum, molestie quis, lacinia varius nunc, rhoncus purus, consectetuer congue risus. 
+	Recent advancements in Natural Language Processing produced state of the art language models based on Transformers.
+	This study aims to determine, how well these models perform for topic modeling task in polish language.
+	With LDA being the most commonly used method, it is assumed as the baseline.
+	The tests have been carried out on the Polish Parliamentary Corpus, which consists of diverse and long utterances.
+	Topic modeling with is based on BERTopic, which consists of the following steps:
+		sentence embedding, vector dimensionality reduction and clustering into topic groups.
+	
+		It has shown promising results far exceeding those achieved by LDA,
+		however embedding lemmatized sentences with statistical \emph{TF-IDF} method has proven to be most efficient for such long sequences.
+	Other methods (\emph{Sentence-Transformers}, \emph{Universal Sentence Encoder}) lose their accuracy with document length increase.
+	This is caused by limited input length when analysing whole utterance, or information loss in averaging vectors when splitting document into sentences.
 \end{abstract}
-\mykeywords{one, two, three, four}
+\mykeywords{nlp, bert, bertopic, lda, topic modeling}
 }
