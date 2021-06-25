@@ -3,19 +3,30 @@
 \chapter{Wstęp}
  
 \section{Cel i zakres pracy}
-	Celem pracy jest zbadanie skuteczności nowoczesnych metod z dziedziny przetwarzania języka naturalnego na nieotagowanym zestawie danych.
-	W ostatnich latach powstały przełomowe rozwiązania oparte na modelach językowych bazujących na architekturze BERT\@.
-	W pracy przeprowadzone zostaną badania mające na celu ustalenie, jak sprawują się takie metody dla języka polskiego w kontekście nienadzorowanego problemu modelowania tematycznego.
-	Jest to zadanie, w którym model językowy grupuje dokumenty poprzez analizę semantyczną zakładając,
-		że zgrupowane dokumenty reprezentują wspólny temat.
-	
-	Jako źródło dokumentów posłużą wypowiedzi posłów Sejmu III Rzeczpospolitej Polskiej pozyskane z korpusu dyskursu parlamentarnego.
-	Z takim zbiorem danych wiążą się dodatkowe wyzwania, mianowicie nie wszystkie wypowiedzi zawierają wyróżniające słowa
+	Celem pracy jest zbadanie skuteczności nowoczesnych metod z dziedziny przetwarzania języka naturalnego
+		w kontekście metod oceny podobieństwa semantycznego na potrzeby analizy dyskursu publicznego.
+	Prace przeprowadzone zostaną na zbiorze wypowiedzi posłów Sejmu III Rzeczpospolitej Polskiej pozyskanym z Korpusu Dyskursu Parlamentarnego.
+	Ze względu na brak istniejących oznaczeń dokumentów, postanowiono skupić się na problemie z dziedziny uczenia nienadzorowanego, jakim jest modelowanie tematyczne.
+	Jest to zadanie, w którym model językowy grupuje podobne dokumenty poprzez analizę semantyczną tworząc zbiory reprezentujące spójne tematy.
+
+	Z wybranym zbiorem dokumentów wiążą się dodatkowe wyzwania, mianowicie nie wszystkie wypowiedzi zawierają wyróżniające słowa
 		(np.\ kiedy wypowiedź jest odpowiedzią na zapytanie to osoba nie zawsze zawrze w wypowiedzi kontekst).
 	Dodatkowo, większość współczesnych metod NLP operuje na krótkich dokumentach, podczas gdy wypowiedzi sejmowe mają formę nierzadko długich przemówień.
-	Te aspekty zbioru danych oraz wysokie zróżnicowanie tematyczne kwestii poruszanych w sejmie sprawiają, że jest to intrygujący i obiecujący zestaw dokumentów do analizy.
+	Te aspekty korpusu oraz wysokie zróżnicowanie tematyczne kwestii poruszanych w sejmie sprawiają,
+		że jest to intrygujący i obiecujący zestaw dokumentów do analizy porównawczej.
 
-	Analiza przeprowadzona zostanie na modelach wykorzystujących trzy alternatywne podejścia kodowania dokumentów:
+	Modelowanie tematyczne z wykorzystaniem wektorów kodujących dokumenty odbywa się w czterech krokach:
+	\begin{enumerate}
+		\item osadzenie wektorów dokumentów,
+		\item redukcja wymiarowości wektorów,
+		\item grupowanie na podstawie podobieństwa,
+		\item utworzenie reprezentacji słownej każdego tematu (zbioru słów najlepiej opisujących zgrupowane wypowiedzi).
+	\end{enumerate}
+	Krok pierwszy może zostać wykonany każdą metodą generującą wektory kodujące dokumenty na jednej wspólnej przestrzeni.
+	W ostatnich latach powstały przełomowe rozwiązania oparte na modelach językowych bazujących na architekturze BERT\@.
+	W pracy przeprowadzone zostaną badania mające na celu ustalenie, jak skuteczne są takie modele w kontekście analizowanego problemu.
+	Dodatkowo, analiza przeprowadzona zostanie również na modelach wykorzystujących alternatywne podejścia kodowania dokumentów,
+		co daje sumarycznie trzy następujące metody:
 	\begin{itemize}
 		\item architektura BERT,
 		\item sieć konwolucyjna,
