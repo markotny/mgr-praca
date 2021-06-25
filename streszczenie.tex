@@ -17,7 +17,7 @@
 	Algorytmy porównano z wiodącą metodą LDA\@.
 	Testy przeprowadzono na Korpusie Dyskursu Parlamentarnego, który zawiera różnorodne i długie wypowiedzi.
 	Modelowanie tematyczne oparto na algorytmie BERTopic, który składa się z następujących kroków:
-		osadzenie wektorów zdań, redukcja wymiarowości wektorów i klastrowanie w grupy tematyczne.
+		osadzenie wektorów zdań, redukcja wymiarowości wektorów i klastrowanie w grupy tematyczne poprzez ocenę podobieństwa semantycznego.
 	
 		Z powodzeniem utworzono modele przewyższające jakością LDA, choć nie wszystkie pierwotne założenia okazały się słuszne.
 	Jak pokazała analiza wyników, dokładność zaawansowanych modeli takich jak \emph{Sentence-Transformers} czy \emph{Universal Sentence Encoder}
@@ -38,7 +38,7 @@
 	With LDA being the most commonly used method, it is assumed as the baseline.
 	The tests have been carried out on the Polish Parliamentary Corpus, which consists of diverse and long utterances.
 	Topic modeling with is based on BERTopic, which consists of the following steps:
-		sentence embedding, vector dimensionality reduction and clustering into topic groups.
+		sentence embedding, vector dimensionality reduction and clustering into topic groups by comparing semantic similarity.
 	
 		It has shown promising results far exceeding those achieved by LDA,
 		however embedding lemmatized sentences with statistical \emph{TF-IDF} method has proven to be most efficient for such long sequences.
